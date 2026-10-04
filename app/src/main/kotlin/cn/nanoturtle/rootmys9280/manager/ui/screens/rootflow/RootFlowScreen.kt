@@ -274,18 +274,24 @@ private fun RootFlowContent(
             // Vector 同款完整状态 banner：动态背景 + 品牌 + 状态徽章（呼吸动画）+ 详情行。
             // 全出血：延伸到屏幕两端，无水平内边距。
             val ambienceKey by ServiceLocator.settings.headerAmbience.collectAsStateWithLifecycle()
-            // 状态：驱动已加载=已激活，运行中=检查中，否则=未激活。
-            // ksuLoaded 是实际检测（/proc/modules），不依赖本次会话是否跑过流程。
+            // 状态分三档，不能用「模块加载」直接代表「已 root」：
+            //   rooted      —— su 能拿到 uid=0，root 真的可用 → 已激活
+            //   ksuLoaded   —— 驱动在内核里但 su 不可用（late-load 后没挂上 su 的半就绪态）
+            //                  → 单独的中间态提示，否则用户会看到「已取得root」却 su 不了
+            //   都不是      —— 未激活
+            // 两个值都在 refreshKsuStatus() 里实测得出，不依赖本次会话是否跑过流程。
             val tone: StatusTone =
                 when {
                     state.busy -> StatusTone.Neutral
-                    state.ksuLoaded -> StatusTone.Active
+                    state.rooted -> StatusTone.Active
+                    state.ksuLoaded -> StatusTone.Neutral
                     else -> StatusTone.Error
                 }
             val statusWord =
                 when {
                     state.busy -> stringResource(R.string.status_checking)
-                    state.ksuLoaded -> stringResource(R.string.status_active)
+                    state.rooted -> stringResource(R.string.status_active)
+                    state.ksuLoaded -> stringResource(R.string.status_driver_only)
                     else -> stringResource(R.string.status_inactive)
                 }
             StatusHeader(

@@ -499,7 +499,17 @@ object AdbWirelessController : ShellExecutor {
         private val remoteId: Int,
         private val localId: Int,
     ) : Process() {
-        private val readBuffer = java.util.concurrent.LinkedBlockingDeque<Byte?>()
+        /**
+         * 按**块**缓冲，而不是逐字节。
+         *
+         * 旧实现用 `LinkedBlockingDeque<Byte>` 逐个 put：推送 5 MB 的 ksud 会产生
+         * 数百万个装箱 Byte 与队列节点（约数百 MB 内存），同时读写两端各要付出
+         * 数百万次加锁 —— 实测表现就是「载荷推不上去」。改成按块之后，
+         * 内存与锁开销都降到数据块数量级。
+         */
+        private val readChunks = java.util.concurrent.LinkedBlockingDeque<ByteArray>()
+        @Volatile private var currentChunk: ByteArray? = null
+        private var currentPos = 0
         private val writeLock = Any()
         private val sharedStream by lazy { AdbInputStream() }
         private val inputStreamImpl: InputStream by lazy { sharedStream }
@@ -512,17 +522,26 @@ object AdbWirelessController : ShellExecutor {
 
         /** 由全局 reader 调用：写入服务端发来的数据（过滤 pty 的 \r）。 */
         fun enqueueData(payload: ByteArray) {
-            for (b in payload) {
-                if (b.toInt() == '\r'.code) continue
-                readBuffer.put(b)
-            }
+            if (payload.isEmpty()) return
+            val hasCr = payload.any { it.toInt() == '\r'.code }
+            val chunk =
+                if (!hasCr) payload
+                else {
+                    val out = java.io.ByteArrayOutputStream(payload.size)
+                    for (b in payload) {
+                        if (b.toInt() == '\r'.code) continue
+                        out.write(b.toInt())
+                    }
+                    out.toByteArray()
+                }
+            if (chunk.isNotEmpty()) readChunks.put(chunk)
         }
 
         /** 由全局 reader 调用：服务端 CLSE 或连接断开。唤醒阻塞的读（EOF 由 exitCode 判定）。 */
         fun markClosed() {
             // 注意：不能 put(null) 做 EOF 哨兵 —— LinkedBlockingDeque 禁止 null 元素，
             // 会抛 NPE 杀死 reader 线程。EOF 判定在 AdbInputStream.read() 里靠
-            // `exitCode != null && readBuffer.isEmpty()` 完成。
+            // `exitCode != null && 缓冲耗尽` 完成。
             synchronized(exitLock) {
                 exitCode = exitCode ?: 0
                 exitLock.notifyAll()
@@ -566,53 +585,82 @@ object AdbWirelessController : ShellExecutor {
         override fun isAlive(): Boolean = exitCode == null
 
         private inner class AdbInputStream : InputStream() {
-            override fun available(): Int {
-                var n = 0
-                val it = readBuffer.iterator()
-                while (it.hasNext()) {
-                    if (it.next() != null) n++
-                }
-                return n
-            }
 
-            override fun read(): Int {
-                // 阻塞等待：缓冲空且进程未结束时应挂起，直到有数据或 EOF 哨兵（null）
+            /** 当前块耗尽了就换下一块；没有可换的且进程已结束 → null 表示 EOF。 */
+            private fun nextChunk(): ByteArray? {
                 while (true) {
-                    val b = readBuffer.pollFirst()
-                    if (b != null) return b.toInt() and 0xff
-                    // 队列空：进程已结束（EOF 哨兵被消费）→ -1；否则短暂等待后重试
-                    if (exitCode != null && readBuffer.isEmpty()) return -1
+                    val c = currentChunk
+                    if (c != null && currentPos < c.size) return c
+                    currentChunk = null
+                    currentPos = 0
+                    val nxt = readChunks.pollFirst()
+                    if (nxt != null) {
+                        currentChunk = nxt
+                        currentPos = 0
+                        continue
+                    }
+                    if (exitCode != null && readChunks.isEmpty()) return null
+                    // 队列暂时空：等一小会儿再试（避免忙等）
                     try {
-                        Thread.sleep(20)
+                        Thread.sleep(5)
                     } catch (_: InterruptedException) {
                         Thread.currentThread().interrupt()
-                        return -1
+                        return null
                     }
                 }
             }
 
+            override fun available(): Int {
+                val c = currentChunk
+                return (if (c != null) c.size - currentPos else 0) +
+                    readChunks.sumOf { it.size }
+            }
+
+            override fun read(): Int {
+                val c = nextChunk() ?: return -1
+                return c[currentPos++].toInt() and 0xff
+            }
+
             override fun read(b: ByteArray, off: Int, len: Int): Int {
                 if (len == 0) return 0
-                val first = read()
-                if (first < 0) return -1
-                b[off] = first.toByte()
-                var count = 1
-                while (count < len) {
-                    val nxt = readBuffer.pollFirst() ?: break
-                    if (nxt == null) break // EOF 哨兵：数据结束
-                    b[off + count] = nxt
-                    count++
-                }
-                return count
+                val c = nextChunk() ?: return -1
+                val n = minOf(len, c.size - currentPos)
+                System.arraycopy(c, currentPos, b, off, n)
+                currentPos += n
+                return n
             }
         }
 
         private inner class AdbOutputStream : OutputStream() {
+            @Volatile private var closed = false
+
             override fun write(b: Int) = write(byteArrayOf(b.toByte()), 0, 1)
+
             override fun write(b: ByteArray, off: Int, len: Int) {
+                if (closed) throw java.io.IOException("stream closed")
                 synchronized(writeLock) {
                     controller.sendMessage(CMD_WRTE, remoteId, 0, b.copyOfRange(off, off + len))
                 }
+            }
+
+            /**
+             * 关闭写方向 —— 这一步**不能省**。
+             *
+             * `OutputStream.close()` 的默认实现是空操作，而调用方（writeFile）用
+             * `process.outputStream.use { ... }` 表达「输入结束」。若不在这里发 CLSE，
+             * 对端那条 `cat > /data/local/tmp/ksud` 会一直等 EOF 不返回，
+             * 随后 `process.waitFor()` 永久阻塞 —— 用户侧的表现就是
+             * 「开始 root 后载荷推不上去、流程卡死」。
+             *
+             * ADB 通道没有 TCP 那种半关闭语义，CLSE 即「本端不再发送」，
+             * 服务端会据此结束 shell 并回 CLSE，进而唤醒 waitFor()。
+             */
+            override fun close() {
+                if (closed) return
+                closed = true
+                runCatching { controller.sendMessage(CMD_CLSE, localId, remoteId) }
+                controller.unregisterProcess(remoteId)
+                markClosed()
             }
         }
     }

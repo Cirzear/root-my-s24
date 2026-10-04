@@ -963,13 +963,28 @@ class RootViewModel(app: Application) : AndroidViewModel(app) {
      * SELinux / KSU 隐藏机制拒绝（Permission denied），而 shell 视角能看到 kernelsu。
      */
     suspend fun refreshKsuStatus() = withContext(Dispatchers.IO) {
-        val loaded = runCatching {
+        // 两件事要分开看，混为一谈会误报：
+        //   modLoaded —— 驱动模块在内核里（/proc/modules 有 kernelsu）
+        //   suUsable  —— root 真的能用（su 能拿到 uid=0）
+        // 实测遇到过 modLoaded=true 而 suUsable=false 的半就绪状态：late-load 之后
+        // 模块是 Live 的，但 /system/bin/su 压根不存在，用户实际拿不到 root。
+        // 旧实现只看模块，于是首页显示「已取得root」，与用户体感完全相反。
+        val (modLoaded, suUsable) = runCatching {
             if (shellExecutor.isReady()) {
-                // shell 权限经执行器检测
-                shellExecutor.shell(
+                val mod = shellExecutor.shell(
                     "grep -q 'kernelsu' /proc/modules 2>/dev/null || " +
                         "ls /sys/module/kernelsu >/dev/null 2>&1"
                 ).first == 0
+                if (!mod) {
+                    false to false
+                } else {
+                    // 只有模块在时才值得再探一次 su；su 未授权/未挂载时这里为 false
+                    val su = shellExecutor
+                        .shell("su -c id 2>/dev/null")
+                        .second
+                        .contains("uid=0")
+                    true to su
+                }
             } else {
                 // 执行器不可用时的兜底（部分环境 app 可直接读）
                 val p = ProcessBuilder(
@@ -977,10 +992,11 @@ class RootViewModel(app: Application) : AndroidViewModel(app) {
                     "grep -q 'kernelsu' /proc/modules 2>/dev/null || " +
                         "ls /sys/module/kernelsu >/dev/null 2>&1"
                 ).start()
-                p.waitFor() == 0
+                (p.waitFor() == 0) to false
             }
-        }.getOrDefault(false)
-        _state.value = _state.value.copy(ksuLoaded = loaded, rooted = loaded)
+        }.getOrDefault(false to false)
+
+        _state.value = _state.value.copy(ksuLoaded = modLoaded, rooted = modLoaded && suUsable)
     }
 
     /**
