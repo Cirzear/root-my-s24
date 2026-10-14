@@ -105,5 +105,20 @@
         }
       ]
     }
+  },
+  "S9210DZI1": {
+    "builds": [
+      "*DZI1"
+    ],
+    "ksu": [
+      {
+        "asset": "ksud-selected",
+        "label": "3.2.5",
+        "version": "3.2.5",
+        "state": "stable",
+        "note": "3.3.0 的 LKM vermagic 要求 abS9280ZCS6DZH3，S9210 国行 DZI1 需回退 3.2.5"
+      }
+    ],
+    "note": "SM-S9210 国行 DZI1（e1q）：真机验证 attempt=1/24 成功；配套管理器需官方 KernelSU v3.2.5 (32525)"
   }
 }
