@@ -104,21 +104,30 @@
           "state": "stable"
         }
       ]
+    },
+    "S9210DZI1": {
+      "tested": true,
+      "builds": [
+        "*DZI1"
+      ],
+      "note": "SM-S9210 国行 DZI1（e1q）：真机验证 exploit attempt=1/24 成功。KSU 3.3.0（32601）用 APK 内置资产 ksud-dzh3-32601 实测可用（模块 vermagic 由 ksud 运行时改写，故 DZH3 那份模块在 DZI1 直接可用）；配套管理器需装官方 KernelSU v3.3.0 (32601)，否则显示版本不匹配。异常可在界面切回 3.2.5（ksud-selected）。",
+      "ksu": [
+        {
+          "asset": "ksud-dzh3-32601",
+          "label": "3.3.0",
+          "version": "3.3.0",
+          "state": "stable",
+          "devices": [
+            "*DZI1"
+          ]
+        },
+        {
+          "asset": "ksud-selected",
+          "label": "3.2.5",
+          "version": "3.2.5",
+          "state": "stable"
+        }
+      ]
     }
-  },
-  "S9210DZI1": {
-    "builds": [
-      "*DZI1"
-    ],
-    "ksu": [
-      {
-        "asset": "ksud-selected",
-        "label": "3.2.5",
-        "version": "3.2.5",
-        "state": "stable",
-        "note": "3.3.0 的 LKM vermagic 要求 abS9280ZCS6DZH3，S9210 国行 DZI1 需回退 3.2.5"
-      }
-    ],
-    "note": "SM-S9210 国行 DZI1（e1q）：真机验证 attempt=1/24 成功；配套管理器需官方 KernelSU v3.2.5 (32525)"
   }
 }
