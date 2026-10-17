@@ -204,7 +204,7 @@ versionName 追加一个后缀，方便把 beta 包与正式发布区分开（�
 
 ## 依赖与致谢
 
-- [CVE-2026-43499](https://github.com/IonStack/CVE-2026-43499) 安全研究（IonStack / NebuSec）
+- [CVE-2026-43499](https://github.com/NebuSec/CyberMeowfia/tree/main/IonStack/CVE-2026-43499) 安全研究（IonStack / NebuSec）
 - [Root-My-Galaxy](https://github.com/BuSung-dev/Root-My-Galaxy) 免解锁 root 参考工程
 - [KernelSU](https://github.com/tiann/KernelSU)（GPL-2.0）
 - [Zygisk-Next](https://github.com/Dr-TSNG/ZygiskNext)
