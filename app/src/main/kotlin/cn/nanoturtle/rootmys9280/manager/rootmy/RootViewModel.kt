@@ -46,6 +46,7 @@ import java.io.OutputStreamWriter
  *  - 国行：DZF2（覆盖 DZE2–DZG1，载荷 cve-2026-43499）/ BYH7（One UI 7，载荷 cve-2026-43499-byh7）
  *  - 国行 Z Fold6：与 S24 同 GKI 构建号，已验证共用 DZF2 载荷（cve-2026-43499）
  *  - 港版/台版：同构建号共用载荷——DZE2（范围 DZE2–DZG1，载荷 cve-2026-43499-dze2）/ CZA1（One UI 8.0）
+ *  - 美版 S24+（S926U1）DZE2：字符串区偏移与港版不同，独立载荷 cve-2026-43499-dze2-xaa（issue #10）
  *  - DZG1 已禁用：DZG1 载荷真机早期无声崩溃，且与 DZF2 同构建号，直接走 DZF2 载荷
  */
 class RootViewModel(app: Application) : AndroidViewModel(app) {
@@ -107,6 +108,11 @@ class RootViewModel(app: Application) : AndroidViewModel(app) {
         DZE2("cve-2026-43499-dze2", "One UI 8.5", "S24 全系 · 外版（港版/台版）", "DZE2–DZG1", Region.HONGKONG_TAIWAN, "ksud-selected"),
         // 台湾 S24+（SM-S9260, e2q）DZG1：实测使用港版 DZE2 载荷成功（单设备记录，issue #3）
         S9260TW_DZE2("cve-2026-43499-dze2", "One UI 8.5", "S24 全系 · 外版（台版 S24+）", "DZE2–DZG1", Region.HONGKONG_TAIWAN, "ksud-selected"),
+        // 美版 S24+（SM-S926U1, e2q）DZE2：与港版同构建号 33419968，但 .rodata 字符串区
+        // 偏移不同（nfnetlink_log 0x16a61b8 vs 港版 0x16a61e6），p0 指纹按美版内核重生成
+        // （32 行中 1 个 qword 不同）——美版**不要**选港版 DZE2 条目，用本条。issue #10。
+        // 定标报告：docs/dze2-xaa-target-complete.md
+        S926U1DZE2("cve-2026-43499-dze2-xaa", "One UI 8.5", "SM-S926U1 美版 S24+", "DZE2", Region.HONGKONG_TAIWAN, "ksud-selected", tested = false),
 
         // —— 以下为 RootMyGalaxy 移植的载荷（运行时 KASLR 定标，未经本 App 实测）——
         // 需在设置里启用「启用未经测试的载荷」后才在固件选择页显示。
