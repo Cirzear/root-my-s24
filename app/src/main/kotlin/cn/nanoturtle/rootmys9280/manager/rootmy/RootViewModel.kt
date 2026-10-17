@@ -123,6 +123,7 @@ class RootViewModel(app: Application) : AndroidViewModel(app) {
         S9210DZE2("cve-2026-43499-S9210ZCS6DZE2", "One UI 8.5", "S24 全系 · 国行", "DZE2", Region.CHINA, "ksud-selected", tested = false),
         S9210DZF2("cve-2026-43499-S9210ZCS6DZF2", "One UI 8.5", "S24 全系 · 国行", "DZF2", Region.CHINA, "ksud-selected", tested = false),
         S9210DZG1("cve-2026-43499-S9210ZCS6DZG1", "One UI 8.5", "S24 全系 · 国行", "DZG1", Region.CHINA, "ksud-selected", tested = false),
+        S9210DZI1("cve-2026-43499-S9210ZCS6DZI1", "One UI 8.5", "S24 全系 · 国行", "DZI1", Region.CHINA, "ksud-selected", tested = true),
         S9210HDZG1("cve-2026-43499-S9210ZHS6DZG1", "One UI 8.5", "S24 全系 · 外版", "DZG1", Region.HONGKONG_TAIWAN, "ksud-selected", tested = false),
         S9260DZE2("cve-2026-43499-S9260ZCS6DZE2", "One UI 8.5", "S24 全系 · 国行", "DZE2", Region.CHINA, "ksud-selected", tested = false),
         S9260DZF2("cve-2026-43499-S9260ZCS6DZF2", "One UI 8.5", "S24 全系 · 国行", "DZF2", Region.CHINA, "ksud-selected", tested = false),
