@@ -193,7 +193,7 @@ versionName 追加一個字尾，方便把 beta 包與正式釋出區分開（�
 
 ## 依賴與致謝
 
-- [CVE-2026-43499](https://github.com/IonStack/CVE-2026-43499) 安全研究（IonStack / NebuSec）
+- [CVE-2026-43499](https://github.com/NebuSec/CyberMeowfia/tree/main/IonStack/CVE-2026-43499) 安全研究（IonStack / NebuSec）
 - [Root-My-Galaxy](https://github.com/BuSung-dev/Root-My-Galaxy) 免解鎖 root 參考工程
 - [KernelSU](https://github.com/tiann/KernelSU)（GPL-2.0）
 - [Zygisk-Next](https://github.com/Dr-TSNG/ZygiskNext)
