@@ -126,6 +126,8 @@
     <string name="rootflow_detail">详细</string>
     <string name="rootflow_auto_screen_off">自动熄屏</string>
     <string name="rootflow_auto_screen_off_summary">运行期间自动熄灭屏幕，降低内核竞态概率</string>
+    <string name="rootflow_bakasu_kernel">BakaSU 内核（实验）</string>
+    <string name="rootflow_bakasu_kernel_summary">改用三星适配的 BakaSU 内核（DZH3+ 可验证，每次开机需重新运行，配套 BakaSU 管理器）</string>
     <string name="rootflow_knox_status">KNOX 状态</string>
     <string name="rootflow_knox_loading">查询中...（需 Shizuku）</string>
     <string name="rootflow_export_log">导出日志</string>

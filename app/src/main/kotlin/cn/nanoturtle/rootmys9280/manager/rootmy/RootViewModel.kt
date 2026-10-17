@@ -286,9 +286,12 @@ class RootViewModel(app: Application) : AndroidViewModel(app) {
     private var currentStage = 0
 
     private val payloadName: String get() = firmwareVersion.assetName
-    private val rootHelperName = "cve-2026-43499-root"
+    /** root 守护进程资产：BakaSU 模式用带 KSU_NO_DAEMON / 包名适配的变体 */
+    private val rootHelperName: String
+        get() = if (bakasuKernelEnabled) "cve-2026-43499-root-bakasu" else "cve-2026-43499-root"
     /** KernelSU 内核驱动：按所选固件的内核系列选择（5.15/6.1/6.6/6.12 各对应一个资产） */
-    private val ksudName: String get() = ksuAssetFor(firmwareVersion)
+    private val ksudName: String
+        get() = if (bakasuKernelEnabled) "ksud-bakasu-dzh3" else ksuAssetFor(firmwareVersion)
     private val PREFS_SETTINGS = "settings"
     private val PREFS_FIRMWARE = "firmware_version"
     private val KEY_AUTH_METHOD = "auth_method"
@@ -308,6 +311,9 @@ class RootViewModel(app: Application) : AndroidViewModel(app) {
      */
     private val KEY_DF_ENGINE_ENABLED = "df_engine_enabled"
 
+    /** BakaSU 实验内核（三星 KDP/RKP/DEFEX 适配版）。默认关闭。 */
+    private val KEY_BAKASU_KERNEL = "bakasu_kernel"
+
     /** 当前 shell 执行器（Shizuku 或无线调试 adb），全部命令经由此执行。 */
     var shellExecutor: ShellExecutor = ShizukuController
         private set
@@ -315,6 +321,10 @@ class RootViewModel(app: Application) : AndroidViewModel(app) {
     private val _dfEngineEnabled = MutableStateFlow(false)
     /** DirtyFrag 引擎开关状态流（供 UI 观察；读取当前值请用 dfEngineEnabled） */
     val dfEngineEnabledFlow: StateFlow<Boolean> = _dfEngineEnabled
+
+    private val _bakasuKernelEnabled = MutableStateFlow(false)
+    /** BakaSU 实验内核开关状态流（供 UI 观察；读取当前值请用 bakasuKernelEnabled） */
+    val bakasuKernelEnabledFlow: StateFlow<Boolean> = _bakasuKernelEnabled
 
     private val _adbWirelessEnabled = MutableStateFlow(false)
     /** 无线调试授权是否启用（设置页开关；主页订阅此状态决定是否显示无线调试控件） */
@@ -378,6 +388,7 @@ class RootViewModel(app: Application) : AndroidViewModel(app) {
         _adbWirelessEnabled.value = adbEnabled
         _untestedPayloadsEnabled.value = prefs.getBoolean(KEY_UNTESTED_PAYLOADS_ENABLED, false)
         _dfEngineEnabled.value = prefs.getBoolean(KEY_DF_ENGINE_ENABLED, false)
+        _bakasuKernelEnabled.value = prefs.getBoolean(KEY_BAKASU_KERNEL, false)
         if (adbEnabled && saved == AuthMethod.ADB_WIRELESS.name) {
             shellExecutor = AdbWirelessController
         } else if (!adbEnabled && saved == AuthMethod.ADB_WIRELESS.name) {
@@ -743,8 +754,9 @@ class RootViewModel(app: Application) : AndroidViewModel(app) {
         appendLog("RUN-ID: $currentRunId")
         // 记下本轮用的载荷与 KSU 驱动版本：服务端据此把成功率按 KSU 版本拆开统计
         appendLog(
-            "载荷: ${firmwareVersion.assetName} · KSU: ${ksuLabelFor(firmwareVersion)}" +
-                " (${ksuAssetFor(firmwareVersion)})"
+            "载荷: ${firmwareVersion.assetName} · KSU: " +
+                if (bakasuKernelEnabled) "BakaSU 35171 (三星适配) (ksud-bakasu-dzh3)"
+                else "${ksuLabelFor(firmwareVersion)} (${ksuAssetFor(firmwareVersion)})"
         )
         _state.value = _state.value.copy(busy = true, rooted = false, currentStage = 0)
         viewModelScope.launch {
@@ -846,6 +858,17 @@ class RootViewModel(app: Application) : AndroidViewModel(app) {
     val dfEngineEnabled: Boolean
         get() = app.getSharedPreferences(PREFS_SETTINGS, android.content.Context.MODE_PRIVATE)
             .getBoolean(KEY_DF_ENGINE_ENABLED, false)
+
+    /** 设置页的「BakaSU 内核（实验）」开关；读 prefs 实时生效。 */
+    fun setBakasuKernelEnabled(enabled: Boolean) {
+        app.getSharedPreferences(PREFS_SETTINGS, android.content.Context.MODE_PRIVATE)
+            .edit().putBoolean(KEY_BAKASU_KERNEL, enabled).apply()
+        _bakasuKernelEnabled.value = enabled
+    }
+
+    val bakasuKernelEnabled: Boolean
+        get() = app.getSharedPreferences(PREFS_SETTINGS, android.content.Context.MODE_PRIVATE)
+            .getBoolean(KEY_BAKASU_KERNEL, false)
 
     /** 调试选项：自动保存日志到磁盘（崩溃/重启后自动恢复）。默认开启。 */
     fun setAutoSaveLog(enabled: Boolean) {
@@ -1327,6 +1350,22 @@ class RootViewModel(app: Application) : AndroidViewModel(app) {
         }
         appendLog("✔ " + app.getString(R.string.log_temp_root))
 
+        // BakaSU 模式：趁 root 通道还活着先装管理器（模块加载后 root 守护进程可能被 SELinux 收走）
+        if (bakasuKernelEnabled) {
+            runCatching {
+                extractAsset("bakasu-manager.apk")
+                val apk = copyToTmp("bakasu-manager.apk", "/data/local/tmp/bakasu-manager.apk", "644")
+                appendLog("◆ 安装 BakaSU 管理器（${apk.length() / 1024 / 1024} MB）…")
+                val r = shellExecutor.shell(
+                    "$tmpRootHelper sh -c 'pm install -r /data/local/tmp/bakasu-manager.apk' 2>&1"
+                )
+                appendLog(
+                    if (r.first == 0) "✔ BakaSU 管理器已安装"
+                    else "⚠ BakaSU 管理器安装失败: ${r.second.trim().takeLast(200)}"
+                )
+            }.onFailure { appendLog("⚠ BakaSU 管理器安装异常: ${friendlyError(it)}") }
+        }
+
         // 竞态阶段已经结束 —— 后面（ksud late-load / 验证）不再需要熄屏来压内核 work，
         // 所以这里立刻唤屏：一次失败运行可能熄屏跑满 15 分钟，那正是 Shizuku 被
         // 系统回收的高发窗口。早点亮屏能显著缩短这个窗口。
@@ -1377,17 +1416,20 @@ class RootViewModel(app: Application) : AndroidViewModel(app) {
         appendLog(app.getString(R.string.log_daemon_check, daemonCheck.trim()))
         // 管理器状态：报**实际装了什么**，不再写死 "v3.2.5 / versionCode 32525"。
         // （写死的那句会让人以为必须装 32525，而我们自己的 32601 管理器同样可用。）
+        val managerPkg = if (bakasuKernelEnabled) "com.resukisu.resukisu" else "me.weishu.kernelsu"
+        val managerName = if (bakasuKernelEnabled) "BakaSU 管理器" else "KernelSU 管理器"
         runCatching {
             val pm = app.packageManager
-            val info = pm.getPackageInfo("me.weishu.kernelsu", 0)
+            val info = pm.getPackageInfo(managerPkg, 0)
             @Suppress("DEPRECATION")
             val code = info.versionCode
             appendLog(
-                "✔ KernelSU 管理器已就绪：" + info.versionName + " (" + code + ")" +
-                    if (code >= 32601) "" else "；建议更新到 32601（3.3.0）以匹配 3.3.0 驱动"
+                "✔ $managerName 已就绪：" + info.versionName + " (" + code + ")" +
+                    if (!bakasuKernelEnabled && code < 32601) "；建议更新到 32601（3.3.0）以匹配 3.3.0 驱动"
+                    else ""
             )
         }.onFailure {
-            appendLog("⚠ 未检测到 KernelSU 管理器（me.weishu.kernelsu）：装它才能管理 root / 模块")
+            appendLog("⚠ 未检测到 $managerName（$managerPkg）：装它才能管理 root / 模块")
         }
 
         _state.value = _state.value.copy(rooted = true)

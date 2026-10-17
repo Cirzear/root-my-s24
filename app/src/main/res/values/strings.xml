@@ -165,6 +165,8 @@ Auto-save log</string>
     <string name="rootflow_detail">Detail</string>
     <string name="rootflow_auto_screen_off">Auto screen off</string>
     <string name="rootflow_auto_screen_off_summary">Turns the screen off during the run to reduce kernel race probability</string>
+    <string name="rootflow_bakasu_kernel">BakaSU kernel (experimental)</string>
+    <string name="rootflow_bakasu_kernel_summary">Loads the Samsung-ported BakaSU LKM instead of KernelSU (DZH3+, per-boot, needs BakaSU manager)</string>
     <string name="rootflow_knox_status">KNOX status</string>
     <string name="rootflow_knox_loading">Checking... (needs Shizuku)</string>
     <string name="rootflow_export_log">Export log</string>

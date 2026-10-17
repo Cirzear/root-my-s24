@@ -785,6 +785,7 @@ private fun SettingsCard(
     onExportResultShown: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
+    val bakasuEnabled by vm.bakasuKernelEnabledFlow.collectAsStateWithLifecycle()
     LaunchedEffect(exportResult) {
         if (exportResult != null) {
             delay(6_000)
@@ -821,6 +822,26 @@ private fun SettingsCard(
                 Switch(
                     checked = vm.autoScreenOff,
                     onCheckedChange = { vm.setAutoScreenOff(it) },
+                )
+            }
+            HorizontalDivider()
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(vertical = 10.dp),
+                verticalAlignment = Alignment.CenterVertically,
+            ) {
+                Column(Modifier.weight(1f)) {
+                    Text(stringResource(R.string.rootflow_bakasu_kernel), style = MaterialTheme.typography.bodyLarge)
+                    Text(
+                        stringResource(R.string.rootflow_bakasu_kernel_summary),
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    )
+                }
+                Switch(
+                    checked = bakasuEnabled,
+                    onCheckedChange = { vm.setBakasuKernelEnabled(it) },
                 )
             }
             HorizontalDivider()
