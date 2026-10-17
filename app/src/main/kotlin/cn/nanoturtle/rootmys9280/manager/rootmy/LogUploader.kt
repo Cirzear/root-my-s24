@@ -176,7 +176,17 @@ object LogUploader {
         return post(url, payload)
     }
 
-    /** 每次请求都要带的公共字段：令牌 + 本机标识 + 机型。 */
+    /**
+     * 每次请求都要带的公共字段：令牌 + 本机标识 + 机型 + **构建身份**。
+     *
+     * `pkg` / `sig` 是给服务端分辨「官方构建」与「第三方自行编译的构建」用的。
+     * 本仓库经常被 fork 后自行发布，那些版本若沿用官方上传地址，会把运行统计
+     * 混进官方数据里；服务端此前只能看到机型与版本号，无从分辨。
+     *
+     * 判据用 APK 签名证书指纹，因为它是客户端**无法伪造成官方**的那一项
+     * （详见 [BuildOrigin]）。服务端按它把记录标成 official / third_party，
+     * 统计时默认只算 official。
+     */
     private fun basePayload(context: Context): JSONObject =
         JSONObject()
             .put("token", TOKEN)
@@ -186,6 +196,9 @@ object LogUploader {
             .put("android", Build.VERSION.RELEASE)
             .put("sdk", Build.VERSION.SDK_INT)
             .put("appVersion", appVersion(context))
+            .put("pkg", context.packageName)
+            .put("sig", BuildOrigin.signatureSha256(context) ?: "")
+            .put("origin", if (BuildOrigin.isOfficial(context)) "official" else "third_party")
 
     /** 发一次 POST。成功返回 null，失败返回原因（含服务端的 error 字段）。 */
     private fun post(url: String, payload: String): String? =

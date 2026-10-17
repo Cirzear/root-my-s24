@@ -207,6 +207,8 @@ object PayloadStatus {
 
     /** 阻塞拉取并写入缓存；失败抛异常，由 [load] 兜住。 */
     private fun fetchAndStore(context: Context): Snapshot {
+        // 双保险：load() 已挡了一层，这里再挡一次，避免将来被别处直接调用。
+        if (!BuildOrigin.isOfficial(context)) error("third_party_build")
         // 带上本机 versionCode：服务端据此过滤「本 App 还没有的资产」。
         // 没有这个参数时服务端无法分辨客户端新旧，曾因此把 ksud-dzf2-32601
         // 这类新资产下发给旧版 App，旧版 assets 里没有它 → 推送失败。
@@ -245,6 +247,17 @@ object PayloadStatus {
      * 调用方负责放在 IO 线程；任何异常都吞掉——机型页照常用内置默认值工作。
      */
     fun load(context: Context, force: Boolean = false): Snapshot {
+        // 非官方构建：完全不使用在线载荷清单，一律走 App 内置值。
+        //
+        // 原因有两层：
+        //  1. 这份清单是按官方内置资产（ksud-*）写的。fork 若自带自制载荷，
+        //     服务端下发的资产名在它包里根本不存在，只会互相打架。
+        //  2. 在线清单里的 tested / KSU 分配是官方机型的实测结论，套到别人
+        //     改过的构建上没有意义。
+        //
+        // 顺带也避免 fork 版本继续对官方服务器产生请求。
+        if (!BuildOrigin.isOfficial(context)) return Snapshot()
+
         val cache = cached(context)
         // 先发布缓存，UI 立刻有内容可显示
         if (cache.entries.isNotEmpty()) _snapshot.value = cache
