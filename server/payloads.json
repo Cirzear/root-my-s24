@@ -1,5 +1,5 @@
 {
-  "updated": "2026-09-30T16:40:00+08:00",
+  "updated": "2026-10-17T08:20:00+08:00",
   "window_days": 60,
   "entries": {
     "DZH3_KSU330": {
@@ -16,7 +16,8 @@
           "state": "stable",
           "devices": [
             "*DZH3"
-          ]
+          ],
+          "minVc": 157
         },
         {
           "asset": "ksud-selected",
@@ -41,7 +42,18 @@
           "state": "stable",
           "devices": [
             "*DZH3"
-          ]
+          ],
+          "minVc": 157
+        },
+        {
+          "asset": "ksud-dzf2-32601",
+          "label": "3.3.0",
+          "version": "3.3.0",
+          "state": "stable",
+          "devices": [
+            "*DZF2"
+          ],
+          "minVc": 164
         },
         {
           "asset": "ksud-selected",
@@ -56,6 +68,13 @@
         "*CZB2"
       ],
       "ksu": [
+        {
+          "asset": "ksud-czb2-32601",
+          "label": "3.3.0",
+          "version": "3.3.0",
+          "state": "stable",
+          "minVc": 164
+        },
         {
           "asset": "ksud-czb2-32525",
           "label": "3.2.5",
@@ -119,13 +138,30 @@
           "state": "stable",
           "devices": [
             "*DZI1"
-          ]
+          ],
+          "minVc": 157
         },
         {
           "asset": "ksud-selected",
           "label": "3.2.5",
           "version": "3.2.5",
           "state": "stable"
+        }
+      ]
+    },
+    "W9023AIZF1": {
+      "tested": false,
+      "note": "心系天下 W23（SM-W9023N，Android 12 / 5.10.236）独立定标，待真机验证",
+      "ksu": [
+        {
+          "asset": "ksud-android12-5.10",
+          "label": "3.3.0",
+          "version": "3.3.0",
+          "state": "beta",
+          "devices": [
+            "*AIZF1"
+          ],
+          "minVc": 164
         }
       ]
     }
