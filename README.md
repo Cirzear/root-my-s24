@@ -23,6 +23,17 @@
 
 ---
 
+## BakaSU 内核模式（实验）
+
+设置卡里新增「BakaSU 内核（实验）」开关（默认关）。打开后 root 流程改用
+**三星适配的 BakaSU LKM** 替代 KernelSU，并自动安装 BakaSU 管理器：
+
+- 仅 **SM-S9280 / S9280ZCS6DZH3（内核 6.1.145）** 实测通过；
+- 每次开机需要重新运行（late-load 不持久，与 KernelSU 模式一致）；
+- **不要点管理器里的「安装/刷入」页面**（会写 boot，有变砖风险），装模块走「模块」页；
+- 详细说明见 [`docs/bakasu-kernel-mode.md`](docs/bakasu-kernel-mode.md)，
+  构建与脚本仓库：<https://github.com/NanoTurtle1145/BakaSU-S9280>。
+
 ## 使用情况
 
 > 以下为**匿名聚合**统计（数据来自 App 内可选的运行日志共享）：不含 IP、城市或任何设备标识。

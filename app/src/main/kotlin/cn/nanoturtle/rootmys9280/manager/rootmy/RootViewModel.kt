@@ -1140,6 +1140,9 @@ class RootViewModel(app: Application) : AndroidViewModel(app) {
 
         // 1.5 机型报告：完整设备/固件/内核信息，写入日志头部（便于崩溃后从日志识别设备）
         collectDeviceInfo()
+        if (bakasuKernelEnabled) {
+            appendLog("◆ BakaSU 模式：模块仅对 DZH3（6.1.145）实测通过；其他构建内核差异可能导致加载失败或重启")
+        }
 
         // 2. 推送载荷
         appendLog(app.getString(R.string.log_push_payload))
