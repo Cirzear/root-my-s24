@@ -27,4 +27,4 @@ captures/
 .kotlin/sessions/
 
 # 项目提示词（仅本地，不提交）
-AGENTS.md
+# AGENTS.md 现在随仓库公开：fork 的人用 AI 编译时，AI 会自动读它
