@@ -419,19 +419,27 @@ private fun FirmwareVersionCard(
                                 text = version.label,
                                 style = MaterialTheme.typography.bodyLarge,
                             )
-                            if (payloadInCard.entries[version.name]?.tested ?: version.tested) {
-                                Spacer(Modifier.width(6.dp))
-                                Surface(
-                                    shape = RoundedCornerShape(8.dp),
-                                    color = MaterialTheme.colorScheme.primary.copy(alpha = 0.12f),
-                                    contentColor = MaterialTheme.colorScheme.primary,
-                                ) {
-                                    Text(
+                            // 实测状态三态：已实测 → 主色徽章；未实测 → 不显示（沿用旧行为）；
+                            // 未知 → 灰色徽章。第三态只出现在「非官方构建 + 服务端清单无记录」，
+                            // 也就是 fork 自带的载荷：既不能冒充官方结论，也不该套用内置 tested。
+                            when (vm.testStateOf(version)) {
+                                RootViewModel.PayloadTestState.TESTED -> {
+                                    Spacer(Modifier.width(6.dp))
+                                    TestStateChip(
                                         text = stringResource(R.string.rootflow_firmware_tested),
-                                        style = MaterialTheme.typography.labelSmall,
-                                        modifier = Modifier.padding(horizontal = 6.dp, vertical = 1.dp),
+                                        color = MaterialTheme.colorScheme.primary.copy(alpha = 0.12f),
+                                        contentColor = MaterialTheme.colorScheme.primary,
                                     )
                                 }
+                                RootViewModel.PayloadTestState.UNKNOWN -> {
+                                    Spacer(Modifier.width(6.dp))
+                                    TestStateChip(
+                                        text = stringResource(R.string.rootflow_firmware_unknown),
+                                        color = MaterialTheme.colorScheme.surfaceVariant,
+                                        contentColor = MaterialTheme.colorScheme.onSurfaceVariant,
+                                    )
+                                }
+                                RootViewModel.PayloadTestState.UNTESTED -> Unit
                             }
                         }
                         // 适配机型
@@ -474,5 +482,30 @@ private fun FirmwareVersionCard(
                 }
             }
         }
+    }
+}
+
+/**
+ * 固件行标题后面的实测状态小徽章。
+ *
+ * 只负责画，颜色由调用方决定：已实测用主色，未知用 surfaceVariant（灰），
+ * 未实测则干脆不出现 —— 与旧版「只标已实测」的观感保持一致。
+ */
+@Composable
+private fun TestStateChip(
+    text: String,
+    color: Color,
+    contentColor: Color,
+) {
+    Surface(
+        shape = RoundedCornerShape(8.dp),
+        color = color,
+        contentColor = contentColor,
+    ) {
+        Text(
+            text = text,
+            style = MaterialTheme.typography.labelSmall,
+            modifier = Modifier.padding(horizontal = 6.dp, vertical = 1.dp),
+        )
     }
 }

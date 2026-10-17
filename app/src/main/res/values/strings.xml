@@ -95,6 +95,7 @@ Auto-save log</string>
     <string name="rootflow_firmware_filter_all">All</string>
     <string name="rootflow_firmware_no_match">No matching firmware found</string>
     <string name="rootflow_firmware_tested">tested</string>
+    <string name="rootflow_firmware_unknown">unknown</string>
     <!-- KSU 驱动版本选择与载荷在线状态（服务端 payloads.php 下发） -->
     <string name="rootflow_ksu_label">KSU version</string>
     <string name="rootflow_ksu_using">KSU: %1$s</string>

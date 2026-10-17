@@ -56,6 +56,7 @@
     <string name="rootflow_firmware_filter_all">全部</string>
     <string name="rootflow_firmware_no_match">未找到匹配的固件</string>
     <string name="rootflow_firmware_tested">已实测</string>
+    <string name="rootflow_firmware_unknown">未知</string>
     <!-- KSU 驱动版本选择与载荷在线状态（服务端 payloads.php 下发） -->
     <string name="rootflow_ksu_label">KSU 版本</string>
     <string name="rootflow_ksu_using">KSU: %1$s</string>

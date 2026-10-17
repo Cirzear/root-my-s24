@@ -513,6 +513,40 @@ class RootViewModel(app: Application) : AndroidViewModel(app) {
     fun isTested(v: FirmwareVersion): Boolean = payloadEntry(v)?.tested ?: v.tested
 
     /**
+     * 载荷的实测状态（三态）。
+     *
+     * 与 [isTested] 的区别在「服务端清单里没有这条记录」时怎么处理：
+     * [isTested] 会回落 App 内置的 `v.tested`，于是**永远显示不出「未知」**。
+     * 而 fork 的人常常自己塞载荷，那些载荷对官方清单就是未知的 ——
+     * 套用官方清单（或内置值）都不合适。
+     *
+     *   * 清单里有记录      → 以服务端为准
+     *   * 非官方构建        → UNKNOWN（自制载荷，不是我们能判断的东西）
+     *   * 官方构建 + 无记录 → 回落内置值（保持原行为；45 个内置条目里
+     *                          大多数本来就不在清单里，一律判未知会伤到正常用户）
+     */
+    enum class PayloadTestState { TESTED, UNTESTED, UNKNOWN }
+
+    /**
+     * 本 APK 是否官方构建（结果进程内缓存）。
+     *
+     * 固件列表每行渲染都会问一次实测状态，而 [BuildOrigin.isOfficial] 每次都要
+     * 通过 PackageManager 读一遍签名证书 —— 没必要重复算，签名也不会变。
+     */
+    private val officialBuild: Boolean by lazy { BuildOrigin.isOfficial(app) }
+
+    fun testStateOf(v: FirmwareVersion): PayloadTestState {
+        payloadEntry(v)?.tested?.let {
+            return if (it) PayloadTestState.TESTED else PayloadTestState.UNTESTED
+        }
+        return if (officialBuild) {
+            if (v.tested) PayloadTestState.TESTED else PayloadTestState.UNTESTED
+        } else {
+            PayloadTestState.UNKNOWN
+        }
+    }
+
+    /**
      * 该条目可用、且与本机匹配的 KSU 版本；服务端清单在前，内置默认兜底。
      *
      * 兜底项拿不到版本号时（6.6/5.15/6.12 那几份没核对过版本常量）保持空白，
