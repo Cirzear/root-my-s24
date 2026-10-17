@@ -242,7 +242,7 @@ is a developer responsibility and out of scope for this repository.
 
 ## Credits
 
-- [CVE-2026-43499](https://github.com/IonStack/CVE-2026-43499) security research (IonStack / NebuSec)
+- [CVE-2026-43499](https://github.com/NebuSec/CyberMeowfia/tree/main/IonStack/CVE-2026-43499) security research (IonStack / NebuSec)
 - [Root-My-Galaxy](https://github.com/BuSung-dev/Root-My-Galaxy) reference project for unlock-free root
 - [KernelSU](https://github.com/tiann/KernelSU) (GPL-2.0)
 - [Zygisk-Next](https://github.com/Dr-TSNG/ZygiskNext)
