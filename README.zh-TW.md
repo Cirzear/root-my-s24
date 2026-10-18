@@ -10,7 +10,7 @@
 </p>
 
 <p align="center">
-  <a href="https://github.com/NanoTurtle1145/root-my-s24/releases"><img src="https://img.shields.io/badge/version-3.5.0-1E88E5?style=flat-square" alt="Version 3.5.0"></a>
+  <a href="https://github.com/NanoTurtle1145/root-my-s24/releases"><img src="https://img.shields.io/badge/version-3.5.1-1E88E5?style=flat-square" alt="Version 3.5.1"></a>
   <a href="https://github.com/NanoTurtle1145/root-my-s24/releases"><img src="https://blog.nanoturtle.cn/rms24_api/repo.php?badge=downloads" alt="Downloads"></a>
   <a href="https://github.com/NanoTurtle1145/root-my-s24/stargazers"><img src="https://blog.nanoturtle.cn/rms24_api/repo.php?badge=stars" alt="Stars"></a>
   <a href="LICENSE"><img src="https://img.shields.io/badge/license-GPL--3.0-1E88E5?style=flat-square" alt="GPL-3.0"></a>
@@ -92,6 +92,7 @@
 | SM-S9280（港版/臺版 DZH3） | S9280ZHS6DZH3 | 6.1.145 | 併入 DZE2 載荷（與外版共用） |
 | SM-S9280（港版/臺版 CZA1） | S9280ZHS4CZA1 | 6.1.128 | 已定標（港臺共用） |
 | SM-S9260（臺版 DZG1） | S9260ZHS6DZG1 | 6.1.145 | 單裝置實測成功（港臺 DZE2 載荷，見 issue #3） |
+| SM-F741N（韓版 Z Flip6） | F741NKSS4DZE1 | 6.1.145 | 已實測成功（beta.191，見 issue #16） |
 | SM-S9210（國行 BYH7，One UI 7） | S9210ZCU4BYH7 | 6.1.99 | 已定標，待真機驗證 |
 | SM-S9310/S9360/S9380（國行 S25，One UI 8.5） | S9310ZCSCCZG1 | 6.6.98 | 已定標（Android 15 核心，獨立載荷） |
 
@@ -131,7 +132,7 @@
 
 ### 入門與使用
 
-- [docs/release-v3.5.0.md](docs/release-v3.5.0.md) —— 最新發布說明（KernelSU 3.3.0 適配 / 完整改動清單）
+- [docs/release-v3.5.1.md](docs/release-v3.5.1.md) —— 最新發布說明（韓版 Z Flip6 支援 / BakaSU 實驗模式 / 完整改動清單）
 - [docs/release-v3.4.0.md](docs/release-v3.4.0.md) —— v3.4.0 釋出說明
 - [docs/forum-and-admin.md](docs/forum-and-admin.md) —— 討論區與管理端說明
 - [docs/auth-plan.md](docs/auth-plan.md) —— 授權方案規劃（Shizuku / 無線除錯各方案狀態）
@@ -194,11 +195,11 @@
 versionName 追加一個字尾，方便把 beta 包與正式釋出區分開（關於頁/設定頁顯示、APK manifest、上傳的執行日誌裡的 appVersion 都會帶上）：
 
 ```sh
-./gradlew :app:assembleRelease -Prms24Channel=alpha1   # → 3.5.0-alpha1 (157)  引擎試驗包
-./gradlew :app:assembleRelease -Prms24Channel=alpha2   # → 3.5.0-alpha2 (157)
-./gradlew :app:assembleRelease -Prms24Channel=beta1    # → 3.5.0-beta1  (157)  機型/韌體適配預覽
-./gradlew :app:assembleRelease -Prms24Channel=beta2    # → 3.5.0-beta2  (157)
-./gradlew :app:assembleRelease -Prms24Channel=stable   # 正式版 → 3.5.0 (157)
+./gradlew :app:assembleRelease -Prms24Channel=alpha1   # → 3.5.1-alpha1 (157)  引擎試驗包
+./gradlew :app:assembleRelease -Prms24Channel=alpha2   # → 3.5.1-alpha2 (157)
+./gradlew :app:assembleRelease -Prms24Channel=beta1    # → 3.5.1-beta1  (157)  機型/韌體適配預覽
+./gradlew :app:assembleRelease -Prms24Channel=beta2    # → 3.5.1-beta2  (157)
+./gradlew :app:assembleRelease -Prms24Channel=stable   # 正式版 → 3.5.1
 ```
 
 渠道語義（別混用）：
@@ -210,7 +211,7 @@ versionName 追加一個字尾，方便把 beta 包與正式釋出區分開（�
 | `stable` | 正式釋出 | 只收已實測通過的改動 |
 
 產物按 `RootMyS24-v{版本}-{渠道}-build{versionCode}.apk` 命名（如
-`RootMyS24-v3.5.0-alpha1-build157.apk`），一眼能看出某臺機器裝的是哪一版、屬於哪條線。
+`RootMyS24-v3.5.1-alpha1-build157.apk`），一眼能看出某臺機器裝的是哪一版、屬於哪條線。
 渠道字尾**不改變版本號本身**（versionCode 與 tag 推匯出的基礎版本都不動）。
 
 載荷（exploit / root helper / ksud）已內建在 `app/src/main/assets/`。載荷建置鏈屬開發者職責，不在本倉庫範圍。

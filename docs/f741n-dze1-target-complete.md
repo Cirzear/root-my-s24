@@ -1,6 +1,7 @@
 # 韩版 SM-F741N DZE1（b6q）适配定标报告
 
 > 定标日期：2026-10-18
+> 状态：**已实测成功**（beta.191 由韩版用户验证，issue #16，v3.5.1 起按已实测发布）
 > 目标：`fusion-s24u` → `src/targets/b6q-F741NKSS4DZE1/`
 > 素材：`devices_ports/f741n_unpacked/`（SM-F741N 韩版 Z Flip6，F741NKSS4DZE1，boot.img sha256 `0037d7ebd4f19cf858c471f22507947aa3087ac51d276f87700e87d2f86ce8c0`）
 > 触发：韩版用户求助 —— F741N 此前无对应载荷与 KernelSU 驱动
@@ -95,7 +96,7 @@ ANDROID_NDK_HOME=/home/nt/项目/samsung_root_research/06_工具链/android-ndk-
 - 载荷资产：`cve-2026-43499-F741NKSS4DZE1`（条目 `F741NDZE1`，分组「韩版」）
 - KSU 驱动资产：`ksud-f741n-32601`（32601 / 3.3.0；vermagic 唯一对应本内核，不可与其它机型混用）
 - root 守护进程沿用共享资产 `cve-2026-43499-root`（与机型无关，UMH 协议未变）
-- 默认 `tested=false`（需在设置启用「未经测试的载荷」）；服务端 `payloads.json` 已配置 `F741NDZE1` 条目（`tested=false`、minVc=186），真机验证通过后由服务端直接翻转，无需发版
+- `tested=true`（v3.5.1 起，beta.191 真机验证通过 issue #16）；服务端 `payloads.json` 的 `F741NDZE1` 条目已同步翻转为 `tested=true`
 
 ## 6. 验证清单
 
@@ -104,7 +105,7 @@ ANDROID_NDK_HOME=/home/nt/项目/samsung_root_research/06_工具链/android-ndk-
 - [x] 正式 target 构建（104,128 B；与草案逐字节一致）
 - [x] KernelSU 驱动构建 + 静态审计
 - [x] 服务端清单条目配置（`tested=false`、minVc=186；`builds` 收紧为本机型三运营商构建，避免相邻机型串入统计）
-- [ ] **真机验证**（韩版用户 beta，待测）
+- [x] **真机验证**（beta.191，韩版用户 issue #16 反馈通过）
 
 ## 7. 未采纳项与备注
 

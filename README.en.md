@@ -10,7 +10,7 @@
 </p>
 
 <p align="center">
-  <a href="https://github.com/NanoTurtle1145/root-my-s24/releases"><img src="https://img.shields.io/badge/version-3.5.0-1E88E5?style=flat-square" alt="Version 3.5.0"></a>
+  <a href="https://github.com/NanoTurtle1145/root-my-s24/releases"><img src="https://img.shields.io/badge/version-3.5.1-1E88E5?style=flat-square" alt="Version 3.5.1"></a>
   <a href="https://github.com/NanoTurtle1145/root-my-s24/releases"><img src="https://blog.nanoturtle.cn/rms24_api/repo.php?badge=downloads" alt="Downloads"></a>
   <a href="https://github.com/NanoTurtle1145/root-my-s24/stargazers"><img src="https://blog.nanoturtle.cn/rms24_api/repo.php?badge=stars" alt="Stars"></a>
   <a href="LICENSE"><img src="https://img.shields.io/badge/license-GPL--3.0-1E88E5?style=flat-square" alt="GPL-3.0"></a>
@@ -106,6 +106,7 @@
 | SM-S9280 (HK/TW DZH3) | S9280ZHS6DZH3 | 6.1.145 | Merged into the DZE2 (overseas) payload |
 | SM-S9280 (HK/TW CZA1) | S9280ZHS4CZA1 | 6.1.128 | Calibrated (shared by HK/TW) |
 | SM-S9260 (TW DZG1) | S9260ZHS6DZG1 | 6.1.145 | Verified on a single device (HK/TW DZE2 payload, see issue #3) |
+| SM-F741N (Korea Z Flip6) | F741NKSS4DZE1 | 6.1.145 | Verified working (beta.191, see issue #16) |
 | SM-S9210 (China BYH7, One UI 7) | S9210ZCU4BYH7 | 6.1.99 | Calibrated, awaiting device verification |
 | SM-S9310/S9360/S9380 (China S25, One UI 8.5) | S9310ZCSCCZG1 | 6.6.98 | Calibrated (Android 15 kernel, separate payload) |
 
@@ -161,7 +162,7 @@ The full documentation index lives in [docs/README.md](docs/README.md) (Chinese)
 
 ### Getting started
 
-- [docs/release-v3.5.0.md](docs/release-v3.5.0.md) — latest release notes (KernelSU 3.3.0 adaptation, full changelog)
+- [docs/release-v3.5.1.md](docs/release-v3.5.1.md) — latest release notes (Korean Z Flip6 support, BakaSU experimental mode, full changelog)
 - [docs/release-v3.4.0.md](docs/release-v3.4.0.md) — v3.4.0 release notes
 - [docs/forum-and-admin.md](docs/forum-and-admin.md) — discussion board and admin console
 - [docs/auth-plan.md](docs/auth-plan.md) — authorisation options (status of each Shizuku / wireless-debugging approach)
@@ -242,11 +243,11 @@ official releases (shown in About/Settings, the APK manifest and the `appVersion
 run logs):
 
 ```sh
-./gradlew :app:assembleRelease -Prms24Channel=alpha1   # → 3.5.0-alpha1 (157)  engine experiments
-./gradlew :app:assembleRelease -Prms24Channel=alpha2   # → 3.5.0-alpha2 (157)
-./gradlew :app:assembleRelease -Prms24Channel=beta1    # → 3.5.0-beta1  (157)  device/firmware previews
-./gradlew :app:assembleRelease -Prms24Channel=beta2    # → 3.5.0-beta2  (157)
-./gradlew :app:assembleRelease -Prms24Channel=stable   # official → 3.5.0 (157)
+./gradlew :app:assembleRelease -Prms24Channel=alpha1   # → 3.5.1-alpha1 (157)  engine experiments
+./gradlew :app:assembleRelease -Prms24Channel=alpha2   # → 3.5.1-alpha2 (157)
+./gradlew :app:assembleRelease -Prms24Channel=beta1    # → 3.5.1-beta1  (157)  device/firmware previews
+./gradlew :app:assembleRelease -Prms24Channel=beta2    # → 3.5.1-beta2  (157)
+./gradlew :app:assembleRelease -Prms24Channel=stable   # official → 3.5.1
 ```
 
 Channel semantics (do not mix them up):
@@ -258,7 +259,7 @@ Channel semantics (do not mix them up):
 | `stable` | Official release | Only changes already verified on real hardware |
 
 Artifacts are named `RootMyS24-v{version}-{channel}-build{versionCode}.apk` (e.g.
-`RootMyS24-v3.5.0-alpha1-build157.apk`), so a single glance tells you which build and which line a
+`RootMyS24-v3.5.1-alpha1-build157.apk`), so a single glance tells you which build and which line a
 device is running. The channel suffix **does not change the version number itself** (neither
 `versionCode` nor the tag-derived base version moves).
 

@@ -110,9 +110,11 @@ class RootViewModel(app: Application) : AndroidViewModel(app) {
         S9260TW_DZE2("cve-2026-43499-dze2", "One UI 8.5", "S24 全系 · 外版（台版 S24+）", "DZE2–DZG1", Region.HONGKONG_TAIWAN, "ksud-selected"),
         // 美版 S24+（SM-S926U1, e2q）DZE2：与港版同构建号 33419968，但 .rodata 字符串区
         // 偏移不同（nfnetlink_log 0x16a61b8 vs 港版 0x16a61e6），p0 指纹按美版内核重生成
-        // （32 行中 1 个 qword 不同）——美版**不要**选港版 DZE2 条目，用本条。issue #10。
-        // 定标报告：docs/dze2-xaa-target-complete.md
-        S926U1DZE2("cve-2026-43499-dze2-xaa", "One UI 8.5", "SM-S926U1 美版 S24+", "DZE2", Region.HONGKONG_TAIWAN, "ksud-selected", tested = false),
+        // （32 行中 1 个 qword 不同），定标报告 docs/dze2-xaa-target-complete.md。
+        //
+        // ⚠ v3.5.1 暂不发布：该载荷尚未经 S926U1 真机实测（只有定标与静态审计）。
+        //   等有真机反馈后取消注释即可恢复；资产 cve-2026-43499-dze2-xaa 仍保留在 assets。
+        // S926U1DZE2("cve-2026-43499-dze2-xaa", "One UI 8.5", "SM-S926U1 美版 S24+", "DZE2", Region.HONGKONG_TAIWAN, "ksud-selected", tested = false),
 
         // —— 以下为 RootMyGalaxy 移植的载荷（运行时 KASLR 定标，未经本 App 实测）——
         // 需在设置里启用「启用未经测试的载荷」后才在固件选择页显示。
@@ -157,7 +159,8 @@ class RootViewModel(app: Application) : AndroidViewModel(app) {
         F7410DZF2("cve-2026-43499-F7410ZCS4DZF2", "One UI 8.5", "SM-F7410 国行 Z Flip6", "DZF2（同 S24 固件）", Region.CHINA, "ksud-selected", tested = false),
         F7410DZG3("cve-2026-43499-F7410ZCS4DZG3", "One UI 8.5", "SM-F7410 国行 Z Flip6", "DZG3", Region.CHINA, "ksud-selected", tested = false),
         // —— 韩版（b6q 独立定标载荷 + 专属 32601 驱动）——
-        F741NDZE1("cve-2026-43499-F741NKSS4DZE1", "One UI 8.5", "SM-F741N 韩版 Z Flip6", "DZE1", Region.KOREA, "ksud-f741n-32601", tested = false),
+        // 2026-10-18 beta.191 真机反馈通过（issue #16），v3.5.1 起按已实测发布
+        F741NDZE1("cve-2026-43499-F741NKSS4DZE1", "One UI 8.5", "SM-F741N 韩版 Z Flip6", "DZE1", Region.KOREA, "ksud-f741n-32601", tested = true),
         F7660BZG3("cve-2026-43499-F7660ZCSBBZG3", "One UI 8.5", "SM-F7660 国行 Z Flip7", "BZG3", Region.CHINA, "ksud-android15-6.6", tested = false),
         F9460GZF1("cve-2026-43499-F9460ZCS9GZF1", "One UI 7", "SM-F9460 国行 Z Fold5", "GZF1", Region.CHINA, "ksud-android13-5.15", tested = false),
         F9560DZG3("cve-2026-43499-F9560ZCS4DZG3", "One UI 8.5", "SM-F9560 国行 Z Fold6", "DZG3", Region.CHINA, "ksud-selected", tested = false),

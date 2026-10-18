@@ -5,6 +5,7 @@
 > 素材：`devices_ports/xaa_oneui8.5_dze2_boot.img`
 > （SM-S926U1, CSC XAA, S926U1UES6DZE2, boot sha256 `1d52c16449fcaeb9b00933b2a8ee1dc172d084a23212092d646ab96423c6c397`）
 > 触发：issue #10 —— SM-S926U1 在 DZE2 上用港版载荷 0 成功（9 次 cache gate 失败 + 2 次触发失败）
+> 发布状态：**未纳入 v3.5.1**（已完成定标与静态审计，尚无 S926U1 真机实测；验证通过后再恢复固件条目）
 
 ---
 
