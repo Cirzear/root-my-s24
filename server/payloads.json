@@ -1,5 +1,5 @@
 {
-  "updated": "2026-10-17T08:20:00+08:00",
+  "updated": "2026-10-18T11:55:27+08:00",
   "window_days": 60,
   "entries": {
     "DZH3_KSU330": {
@@ -61,7 +61,8 @@
           "version": "3.2.5",
           "state": "stable"
         }
-      ]
+      ],
+      "tested": true
     },
     "CZB2_CHC": {
       "builds": [
@@ -125,7 +126,6 @@
       ]
     },
     "S9210DZI1": {
-      "tested": true,
       "builds": [
         "*DZI1"
       ],
@@ -146,6 +146,28 @@
           "label": "3.2.5",
           "version": "3.2.5",
           "state": "stable"
+        }
+      ],
+      "tested": true
+    },
+    "F741NDZE1": {
+      "tested": false,
+      "builds": [
+        "*41NKSS4DZE1",
+        "*41NKOO4DZE1",
+        "*41NLUC4DZE1"
+      ],
+      "note": "KSU 3.3.0（32601）· 韩版 SM-F741N（b6q）专属内核模块，vermagic 与真机 6.1.145-android14-11-33418572-abF741NKSS4DZE1 逐字节一致；配套管理器需装官方 KernelSU v3.3.0 (32601)，本机型无 3.2.5 回退；待真机验证",
+      "ksu": [
+        {
+          "asset": "ksud-f741n-32601",
+          "label": "3.3.0",
+          "version": "3.3.0",
+          "state": "beta",
+          "devices": [
+            "*DZE1"
+          ],
+          "minVc": 186
         }
       ]
     },
