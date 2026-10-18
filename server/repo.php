@@ -266,6 +266,31 @@ function svg_placeholder(string $title): string
         . '</text></svg>';
 }
 
+/** shields.io 同款 flat-square 徽章（自渲染：shields 的 GitHub 动态徽章依赖其令牌池，容易失效） */
+function svg_badge(string $label, string $value, string $color = '#1E88E5'): string
+{
+    $lw = (int)round(mb_strlen($label) * 5.8 + 10);
+    $rw = (int)round(mb_strlen($value) * 5.8 + 10);
+    $w = $lw + $rw;
+    $tx1 = (int)($lw * 5);
+    $tx2 = (int)($lw * 10 + $rw * 5);
+    $tl1 = (int)($lw * 10 - 100);
+    $tl2 = (int)($rw * 10 - 100);
+    $title = $label . ': ' . $value;
+    $le = htmlspecialchars($label);
+    $ve = htmlspecialchars($value);
+    return '<svg xmlns="http://www.w3.org/2000/svg" width="' . $w . '" height="20" role="img" aria-label="' . htmlspecialchars($title) . '">'
+        . '<title>' . htmlspecialchars($title) . '</title>'
+        . '<g shape-rendering="crispEdges">'
+        . '<rect width="' . $lw . '" height="20" fill="#555"/>'
+        . '<rect x="' . $lw . '" width="' . $rw . '" height="20" fill="' . $color . '"/>'
+        . '</g>'
+        . '<g fill="#fff" text-anchor="middle" font-family="Verdana,Geneva,DejaVu Sans,sans-serif" text-rendering="geometricPrecision" font-size="110">'
+        . '<text x="' . $tx1 . '" y="140" transform="scale(.1)" textLength="' . $tl1 . '">' . $le . '</text>'
+        . '<text x="' . $tx2 . '" y="140" transform="scale(.1)" textLength="' . $tl2 . '">' . $ve . '</text>'
+        . '</g></svg>';
+}
+
 function svg_overview(array $d): string
 {
     $repo = $d['repo'] ?? null;
@@ -497,6 +522,22 @@ header('Cache-Control: public, max-age=300');
 if (($_GET['format'] ?? '') === 'json') {
     header('Content-Type: application/json; charset=utf-8');
     echo json_encode($data, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
+    exit;
+}
+
+// 徽章：?badge=stars / ?badge=downloads（README 顶部徽章行用）
+$badge = (string)($_GET['badge'] ?? '');
+if ($badge !== '') {
+    header('Content-Type: image/svg+xml; charset=utf-8');
+    $dlTotal = 0;
+    foreach (($data['releases'] ?? []) as $r) { $dlTotal += (int)$r['dl']; }
+    if ($badge === 'stars') {
+        echo svg_badge('stars', (string)($data['repo']['stars'] ?? 0));
+    } elseif ($badge === 'downloads') {
+        echo svg_badge('downloads', number_format($dlTotal));
+    } else {
+        echo svg_badge('badge', 'n/a');
+    }
     exit;
 }
 
