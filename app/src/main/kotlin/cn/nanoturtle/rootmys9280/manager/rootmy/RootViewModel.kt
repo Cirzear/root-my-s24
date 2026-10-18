@@ -113,7 +113,7 @@ class RootViewModel(app: Application) : AndroidViewModel(app) {
         // （32 行中 1 个 qword 不同），定标报告 docs/dze2-xaa-target-complete.md。
         //
         // ⚠ v3.5.1 暂不发布：该载荷尚未经 S926U1 真机实测（只有定标与静态审计）。
-        //   等有真机反馈后取消注释即可恢复；资产 cve-2026-43499-dze2-xaa 仍保留在 assets。
+        //   等有真机反馈后取消注释即可恢复；载荷资产暂存于 app/unreleased-payloads/（见其中 README）。
         // S926U1DZE2("cve-2026-43499-dze2-xaa", "One UI 8.5", "SM-S926U1 美版 S24+", "DZE2", Region.HONGKONG_TAIWAN, "ksud-selected", tested = false),
 
         // —— 以下为 RootMyGalaxy 移植的载荷（运行时 KASLR 定标，未经本 App 实测）——
