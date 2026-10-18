@@ -68,7 +68,7 @@ class RootViewModel(app: Application) : AndroidViewModel(app) {
                 .edit().putString(KEY_DEVICE_BUILD_TAG, value).apply()
         }
 
-    /** 目标系统版本（决定使用哪份 exploit 载荷）。按地区分组：国行 / 港版台版。 */
+    /** 目标系统版本（决定使用哪份 exploit 载荷）。按地区分组：国行 / 港版台版 / 韩版。 */
     enum class FirmwareVersion(
         val assetName: String,
         /** 系统版本（如 One UI 8.5） */
@@ -156,6 +156,8 @@ class RootViewModel(app: Application) : AndroidViewModel(app) {
         F7310GZF1("cve-2026-43499-F7310TBS9GZF1", "One UI 7", "SM-F7310 国行 Z Flip5", "GZF1", Region.CHINA, "ksud-android13-5.15", tested = false),
         F7410DZF2("cve-2026-43499-F7410ZCS4DZF2", "One UI 8.5", "SM-F7410 国行 Z Flip6", "DZF2（同 S24 固件）", Region.CHINA, "ksud-selected", tested = false),
         F7410DZG3("cve-2026-43499-F7410ZCS4DZG3", "One UI 8.5", "SM-F7410 国行 Z Flip6", "DZG3", Region.CHINA, "ksud-selected", tested = false),
+        // —— 韩版（b6q 独立定标载荷 + 专属 32601 驱动）——
+        F741NDZE1("cve-2026-43499-F741NKSS4DZE1", "One UI 8.5", "SM-F741N 韩版 Z Flip6", "DZE1", Region.KOREA, "ksud-f741n-32601", tested = false),
         F7660BZG3("cve-2026-43499-F7660ZCSBBZG3", "One UI 8.5", "SM-F7660 国行 Z Flip7", "BZG3", Region.CHINA, "ksud-android15-6.6", tested = false),
         F9460GZF1("cve-2026-43499-F9460ZCS9GZF1", "One UI 7", "SM-F9460 国行 Z Fold5", "GZF1", Region.CHINA, "ksud-android13-5.15", tested = false),
         F9560DZG3("cve-2026-43499-F9560ZCS4DZG3", "One UI 8.5", "SM-F9560 国行 Z Fold6", "DZG3", Region.CHINA, "ksud-selected", tested = false),
@@ -227,10 +229,11 @@ class RootViewModel(app: Application) : AndroidViewModel(app) {
                 }
     }
 
-    /** 地区分组：国行 / 港版台版（同构建号共用载荷） */
+    /** 地区分组：国行 / 港版台版 / 韩版（同构建号共用载荷） */
     enum class Region(val label: String) {
         CHINA("国行"),
         HONGKONG_TAIWAN("港版/台版"),
+        KOREA("韩版"),
     }
 
     /** 机型系列（固件选择页筛选用） */

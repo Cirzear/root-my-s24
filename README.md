@@ -141,6 +141,7 @@
 - [docs/cza1-target-complete.md](docs/cza1-target-complete.md) —— 港版 CZA1 定标报告
 - [docs/oneui7-adaptation-report.md](docs/oneui7-adaptation-report.md) —— One UI 7 (BYH7) 可行性报告
 - [docs/byh7-target-complete.md](docs/byh7-target-complete.md) —— BYH7 定标完成报告
+- [docs/f741n-dze1-target-complete.md](docs/f741n-dze1-target-complete.md) —— 韩版 F741N DZE1 定标报告（b6q）
 
 ### 运行日志与故障定位
 
