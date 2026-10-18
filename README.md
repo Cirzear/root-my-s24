@@ -165,6 +165,7 @@
 - [docs/oneui7-adaptation-report.md](docs/oneui7-adaptation-report.md) —— One UI 7 (BYH7) 可行性报告
 - [docs/byh7-target-complete.md](docs/byh7-target-complete.md) —— BYH7 定标完成报告
 - [docs/f741n-dze1-target-complete.md](docs/f741n-dze1-target-complete.md) —— 韩版 F741N DZE1 定标报告（b6q）
+- [docs/s928b-ezif-target-complete.md](docs/s928b-ezif-target-complete.md) —— S24 Ultra 欧版 S928B EZIF 定标报告（One UI 9.0）
 
 ### 运行日志与故障定位
 
