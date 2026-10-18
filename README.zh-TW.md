@@ -25,7 +25,7 @@
 
 ---
 
-## 📊 使用情況
+## 使用情況
 
 > 以下為**匿名聚合**統計（資料來自 App 內可選的執行日誌共享）：不含 IP、城市或任何裝置標識。
 > 圖表由專案伺服器動態生成，隨資料自動更新。
@@ -46,7 +46,7 @@
   <img src="https://blog.nanoturtle.cn/rms24_api/stats.php?svg=firmware" alt="韌體建置分佈" width="100%">
 </p>
 
-## ✨ 特性
+## 特性
 
 - 免解鎖 bootloader：不刷 BL、不升 rev bit，bootloader 保持鎖定
 - 不熔斷 KNOX：e-fuse 狀態保持原樣（可搭配 KnoxPatch 恢復 Secure Folder 等 KNOX 功能）
@@ -60,26 +60,26 @@
 - 執行日誌共享（可選）：始終提供 / 每次詢問 / 不提供，設定裡隨時可改，用於診斷新韌體上的失敗
 - 除錯模式：設定頁點版本號七下開啟，可測日誌收集端連通性、檢視機器標識、重顯首次引導
 
-## 📱 支援裝置
+## 支援裝置
 
 | 機型 | 韌體 | 核心 | 狀態 |
 |---|---|---|---|
-| SM-S9280（國行 DZF2） | S9280ZCS6DZF2 | 6.1.145 | ✅ 已實測成功（基線） |
-| **SM-S9280（國行 DZH3）** | **S9280ZCS6DZH3** | **6.1.145** | **✅ 已實測成功（KernelSU 3.3.0 適配完成）** |
-| SM-F9580（國行 Z Fold6） | 共用 DZF2 載荷 | 同 GKI 建置號 | ✅ 酷安使用者實測成功 |
-| SM-S9280（港版/臺版 DZE2） | S9280ZHS6DZE2 | 6.1.145 | ✅ 已實測成功（港臺同建置號共用載荷） |
-| SM-S9280（國行 DZG1） | S9280ZCS6DZG1 | 6.1.145 | 🧩 併入 DZF2 載荷（v2.5.6 起） |
-| SM-S9280（港版/臺版 DZH3） | S9280ZHS6DZH3 | 6.1.145 | 🧩 併入 DZE2 載荷（與外版共用） |
-| SM-S9280（港版/臺版 CZA1） | S9280ZHS4CZA1 | 6.1.128 | 📐 已定標（港臺共用） |
-| SM-S9260（臺版 DZG1） | S9260ZHS6DZG1 | 6.1.145 | ✅ 單裝置實測成功（港臺 DZE2 載荷，見 issue #3） |
-| SM-S9210（國行 BYH7，One UI 7） | S9210ZCU4BYH7 | 6.1.99 | 🧪 已定標，待真機驗證 |
-| SM-S9310/S9360/S9380（國行 S25，One UI 8.5） | S9310ZCSCCZG1 | 6.6.98 | 📐 已定標（Android 15 核心，獨立載荷） |
+| SM-S9280（國行 DZF2） | S9280ZCS6DZF2 | 6.1.145 | 已實測成功（基線） |
+| **SM-S9280（國行 DZH3）** | **S9280ZCS6DZH3** | **6.1.145** | **已實測成功（KernelSU 3.3.0 適配完成）** |
+| SM-F9580（國行 Z Fold6） | 共用 DZF2 載荷 | 同 GKI 建置號 | 酷安使用者實測成功 |
+| SM-S9280（港版/臺版 DZE2） | S9280ZHS6DZE2 | 6.1.145 | 已實測成功（港臺同建置號共用載荷） |
+| SM-S9280（國行 DZG1） | S9280ZCS6DZG1 | 6.1.145 | 併入 DZF2 載荷（v2.5.6 起） |
+| SM-S9280（港版/臺版 DZH3） | S9280ZHS6DZH3 | 6.1.145 | 併入 DZE2 載荷（與外版共用） |
+| SM-S9280（港版/臺版 CZA1） | S9280ZHS4CZA1 | 6.1.128 | 已定標（港臺共用） |
+| SM-S9260（臺版 DZG1） | S9260ZHS6DZG1 | 6.1.145 | 單裝置實測成功（港臺 DZE2 載荷，見 issue #3） |
+| SM-S9210（國行 BYH7，One UI 7） | S9210ZCU4BYH7 | 6.1.99 | 已定標，待真機驗證 |
+| SM-S9310/S9360/S9380（國行 S25，One UI 8.5） | S9310ZCSCCZG1 | 6.6.98 | 已定標（Android 15 核心，獨立載荷） |
 
-> 同平臺（e3q/e1q）同建置號韌體核心符號一致，可直接通用；港版與臺版同建置號共用同一載荷。跨建置號需逐符號對比修正；跨平臺/跨大版本需完整重新定標，且漏洞可能已被修復。適配方法與各目標定標報告見[文件導航](#-文件導航)。
+> 同平臺（e3q/e1q）同建置號韌體核心符號一致，可直接通用；港版與臺版同建置號共用同一載荷。跨建置號需逐符號對比修正；跨平臺/跨大版本需完整重新定標，且漏洞可能已被修復。適配方法與各目標定標報告見[文件導航](#文件導航)。
 >
 > **國行 DZF2 載荷自 v3.5.0 起覆蓋 DZE2–DZH3**（同一條 6.1.145 核心線）；外版 DZE2 載荷覆蓋 DZE2–DZG1。
 
-## 🧩 KernelSU 驅動版本
+## KernelSU 驅動版本
 
 機型頁有獨立的「KernelSU 驅動版本」分頁，切換它只決定**載入哪個 KernelSU 驅動**，exploit 載荷本身與版本無關。
 
@@ -92,7 +92,7 @@
 
 > 驅動只認可**官方簽名**的 KernelSU Manager。請安裝官方 v3.3.0；裝其它簽名的版本會顯示「未安裝」，此時首頁只提供「越獄」按鈕而非「工作中 [越獄模式]」。
 
-## 🚀 使用流程
+## 使用流程
 
 1. 安裝 App，授權方式（v2.5.5 起無線除錯為實驗性開關，預設關閉）：
    - **Shizuku**（預設）：安裝並啟動 Shizuku（無線/有線 ADB 授權）
@@ -105,11 +105,11 @@
 
 ---
 
-## 📚 文件導航
+## 文件導航
 
 完整文件中心見 [docs/README.md](docs/README.md)。
 
-### 📘 入門與使用
+### 入門與使用
 
 - [docs/release-v3.5.0.md](docs/release-v3.5.0.md) —— 最新發布說明（KernelSU 3.3.0 適配 / 完整改動清單）
 - [docs/release-v3.4.0.md](docs/release-v3.4.0.md) —— v3.4.0 釋出說明
@@ -118,12 +118,12 @@
 - [docs/release-v2.5.5.md](docs/release-v2.5.5.md) —— v2.5.5 釋出說明（無線除錯收斂為實驗性開關）
 - [docs/release-v2.2.md](docs/release-v2.2.md) —— v2.2 釋出說明（歷史）
 
-### 🔬 技術原理
+### 技術原理
 
 - [docs/technical-principles.md](docs/technical-principles.md) —— 本 App 技術原理（漏洞成因 / 利用鏈 / 為什麼免解鎖 / 風險）
 - [研究倉庫 VULNERABILITY_ANALYSIS.md](https://github.com/NanoTurtle1145/samsung-root-research/blob/main/VULNERABILITY_ANALYSIS.md) —— 完整漏洞原理剖析（研究筆記，權威）
 
-### 🎯 韌體適配與定標
+### 韌體適配與定標
 
 - **[docs/adaptation-guide-full.md](docs/adaptation-guide-full.md) —— 完整適配指南（手把手，照著做即可；含判據與失敗分類）⭐**
 - [docs/adaptation-guide.md](docs/adaptation-guide.md) —— 適配方法論（舊版，偏原理）
@@ -133,24 +133,24 @@
 - [docs/oneui7-adaptation-report.md](docs/oneui7-adaptation-report.md) —— One UI 7 (BYH7) 可行性報告
 - [docs/byh7-target-complete.md](docs/byh7-target-complete.md) —— BYH7 定標完成報告
 
-### 🩺 執行日誌與故障定位
+### 執行日誌與故障定位
 
 - [docs/run-log-analysis.md](docs/run-log-analysis.md) —— 成功/失敗日誌逐行對比與判讀
 - [docs/sm-s9380-rmg-root-experience.md](docs/sm-s9380-rmg-root-experience.md) —— SM-S9380 實戰經驗歸檔
 
-### 🗂️ 研究資料
+### 研究資料
 
 - [docs/research-index.md](docs/research-index.md) —— 研究資料全量索引
 - [docs/blog-s9280-root.md](docs/blog-s9280-root.md) —— 部落格：S24 Ultra 國行免解鎖 Root 實踐
 - [samsung-root-research](https://github.com/NanoTurtle1145/samsung-root-research) —— 研究倉庫（韌體/exploit 工程/定標報告權威映象）
 
-## 🔬 技術原理（概要）
+## 技術原理（概要）
 
 本 App 基於核心漏洞 **CVE-2026-43499**（rtmutex 核心棧 use-after-free）：通過 PI futex 鏈死鎖回滾觸發錯誤清理路徑，留下指向已釋放核心棧的懸垂指標；複用該棧偽造 `rt_mutex_waiter` 後獲得實體記憶體讀寫，依次繞過 KASLR、降級 SELinux、以 root 執行輔助程式，最終 late-load KernelSU 驅動。全程不改動持久化分割槽，bootloader 保持鎖定、KNOX e-fuse 不熔斷。
 
 > 完整原理（成因 / 利用鏈 / 防護繞過 / 原始碼對照）見 [docs/technical-principles.md](docs/technical-principles.md) 與研究倉庫 [VULNERABILITY_ANALYSIS.md](https://github.com/NanoTurtle1145/samsung-root-research/blob/main/VULNERABILITY_ANALYSIS.md)。
 
-## ⚠️ 注意事項
+## 注意事項
 
 - **停在已適配韌體，不要升級**：新韌體會修復 CVE-2026-43499 相關漏洞
 - exploit 機率性成功：失敗多試幾次，必要時重啟手機
@@ -163,7 +163,7 @@
 
 ---
 
-## 🛠️ 建置
+## 建置
 
 ```sh
 ./gradlew :app:assembleDebug    # debug APK
@@ -195,7 +195,7 @@ versionName 追加一個字尾，方便把 beta 包與正式釋出區分開（�
 
 載荷（exploit / root helper / ksud）已內建在 `app/src/main/assets/`。載荷建置鏈屬開發者職責，不在本倉庫範圍。
 
-## 🙏 依賴與致謝
+## 依賴與致謝
 
 - [CVE-2026-43499](https://github.com/NebuSec/CyberMeowfia/tree/main/IonStack/CVE-2026-43499) 安全研究（IonStack / NebuSec）
 - [Root-My-Galaxy](https://github.com/BuSung-dev/Root-My-Galaxy) 免解鎖 root 參考工程
@@ -205,6 +205,6 @@ versionName 追加一個字尾，方便把 beta 包與正式釋出區分開（�
 - [KnoxPatch](https://github.com/salvogiangri/KnoxPatch)
 - [Vector](https://github.com/JingMatrix/Vector) 介面模板（Material 3 / ambience）
 
-## 📄 License
+## License
 
 [GNU General Public License v3.0](LICENSE)
