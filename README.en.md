@@ -11,8 +11,8 @@
 
 <p align="center">
   <a href="https://github.com/NanoTurtle1145/root-my-s24/releases"><img src="https://img.shields.io/badge/version-3.5.0-1E88E5?style=flat-square" alt="Version 3.5.0"></a>
-  <a href="https://github.com/NanoTurtle1145/root-my-s24/releases"><img src="https://img.shields.io/github/downloads/NanoTurtle1145/root-my-s24/total?style=flat-square&color=1E88E5" alt="Downloads"></a>
-  <a href="https://github.com/NanoTurtle1145/root-my-s24/stargazers"><img src="https://img.shields.io/github/stars/NanoTurtle1145/root-my-s24?style=flat-square&color=1E88E5" alt="Stars"></a>
+  <a href="https://github.com/NanoTurtle1145/root-my-s24/releases"><img src="https://blog.nanoturtle.cn/rms24_api/repo.php?badge=downloads" alt="Downloads"></a>
+  <a href="https://github.com/NanoTurtle1145/root-my-s24/stargazers"><img src="https://blog.nanoturtle.cn/rms24_api/repo.php?badge=stars" alt="Stars"></a>
   <a href="LICENSE"><img src="https://img.shields.io/badge/license-GPL--3.0-1E88E5?style=flat-square" alt="GPL-3.0"></a>
   <a href="https://github.com/NanoTurtle1145/root-my-s24"><img src="https://img.shields.io/badge/platform-Android-1E88E5?style=flat-square" alt="Android"></a>
 </p>
