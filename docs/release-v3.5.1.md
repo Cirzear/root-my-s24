@@ -45,7 +45,7 @@ v3.5.0 之后的累积更新以 **v3.5.1 稳定版**发布：新增韩版 Galaxy
 - **美版 S24+（SM-S926U1 / XAA）DZE2 载荷**：`e2q-S926USQS6DZE2` 已完成定标
   （美/港 `.rodata` 字符串区差 0x2e，`nfnetlink_log` 0x016a61b8，p0 指纹重生成；
   见 `docs/dze2-xaa-target-complete.md`），但尚无 S926U1 真机实测，**v3.5.1 不包含**
-  该固件条目（资产保留在仓库，验证通过后再发布）。港版/台版 DZE2 条目不受影响。
+  该固件条目，且载荷资产**不打包进 APK**（暂存于 `app/unreleased-payloads/`，内含恢复步骤；验证通过后再发布）。港版/台版 DZE2 条目不受影响。
 
 ## 系统要求
 
@@ -64,4 +64,4 @@ v3.5.0 之后的累积更新以 **v3.5.1 稳定版**发布：新增韩版 Galaxy
 ## 产物校验
 
 - APK：`RootMyS24-v3.5.1-release.apk`
-- SHA-256：`<BUILD_SHA256>`
+- SHA-256：`54292ce5b5dfada2e86fc77aeff6565872054219f1ab03a727b856e6f124d32d`
