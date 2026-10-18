@@ -1,5 +1,5 @@
 {
-  "updated": "2026-10-18T21:45:00+08:00",
+  "updated": "2026-10-18T23:29:21+08:00",
   "window_days": 60,
   "entries": {
     "DZH3_KSU330": {
@@ -168,6 +168,25 @@
             "*DZE1"
           ],
           "minVc": 186
+        }
+      ]
+    },
+    "S928BEZIF": {
+      "tested": false,
+      "builds": [
+        "*S928BXXU6EZIF"
+      ],
+      "note": "欧版 S24 Ultra（e3q）专属内核模块，vermagic 与真机 6.1.162-android14-11-34343818-abS928BXXU6EZIF 逐字节一致；配套官方 KernelSU v3.3.0 (32601)，本机型无 3.2.5 回退；待真机验证",
+      "ksu": [
+        {
+          "asset": "ksud-ezif-32601",
+          "label": "3.3.0",
+          "version": "3.3.0",
+          "state": "beta",
+          "devices": [
+            "*EZIF"
+          ],
+          "minVc": 202
         }
       ]
     },
