@@ -50,6 +50,27 @@
   <img src="https://blog.nanoturtle.cn/rms24_api/stats.php?svg=firmware" alt="Firmware build distribution" width="100%">
 </p>
 
+## Repository stats
+
+> The charts below are generated on the project server from GitHub's public API and update
+> automatically (stars, issues / PRs and release downloads).
+
+<p align="center">
+  <img src="https://blog.nanoturtle.cn/rms24_api/repo.php?svg=overview" alt="Repository overview (stars / forks / downloads / issues / PRs / commits)" width="100%">
+</p>
+
+<p align="center">
+  <img src="https://blog.nanoturtle.cn/rms24_api/repo.php?svg=stars" alt="Star history" width="100%">
+</p>
+
+<p align="center">
+  <img src="https://blog.nanoturtle.cn/rms24_api/repo.php?svg=activity" alt="Issue / PR history (cumulative)" width="100%">
+</p>
+
+<p align="center">
+  <img src="https://blog.nanoturtle.cn/rms24_api/repo.php?svg=downloads" alt="Release downloads" width="100%">
+</p>
+
 ## Features
 
 - **No bootloader unlock**: no BL flashing, no rev-bit bump — the bootloader stays locked

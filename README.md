@@ -57,6 +57,26 @@
   <img src="https://blog.nanoturtle.cn/rms24_api/stats.php?svg=firmware" alt="固件构建分布" width="100%">
 </p>
 
+## 仓库统计
+
+> 以下图表由项目服务器基于 GitHub 公开 API 动态生成，自动更新（Star、Issue / PR 与下载量）。
+
+<p align="center">
+  <img src="https://blog.nanoturtle.cn/rms24_api/repo.php?svg=overview" alt="仓库概览（Star / Fork / 下载 / Issue / PR / 提交）" width="100%">
+</p>
+
+<p align="center">
+  <img src="https://blog.nanoturtle.cn/rms24_api/repo.php?svg=stars" alt="Star 增长历史" width="100%">
+</p>
+
+<p align="center">
+  <img src="https://blog.nanoturtle.cn/rms24_api/repo.php?svg=activity" alt="Issue / PR 历史（累计）" width="100%">
+</p>
+
+<p align="center">
+  <img src="https://blog.nanoturtle.cn/rms24_api/repo.php?svg=downloads" alt="Release 下载量" width="100%">
+</p>
+
 ## 特性
 
 - 免解锁 bootloader：不刷 BL、不升 rev bit，bootloader 保持锁定

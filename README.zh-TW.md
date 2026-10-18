@@ -46,6 +46,26 @@
   <img src="https://blog.nanoturtle.cn/rms24_api/stats.php?svg=firmware" alt="韌體建置分佈" width="100%">
 </p>
 
+## 倉庫統計
+
+> 以下圖表由專案伺服器基於 GitHub 公開 API 動態生成，自動更新（Star、Issue / PR 與下載量）。
+
+<p align="center">
+  <img src="https://blog.nanoturtle.cn/rms24_api/repo.php?svg=overview" alt="倉庫概覽（Star / Fork / 下載 / Issue / PR / 提交）" width="100%">
+</p>
+
+<p align="center">
+  <img src="https://blog.nanoturtle.cn/rms24_api/repo.php?svg=stars" alt="Star 成長歷史" width="100%">
+</p>
+
+<p align="center">
+  <img src="https://blog.nanoturtle.cn/rms24_api/repo.php?svg=activity" alt="Issue / PR 歷史（累計）" width="100%">
+</p>
+
+<p align="center">
+  <img src="https://blog.nanoturtle.cn/rms24_api/repo.php?svg=downloads" alt="Release 下載量" width="100%">
+</p>
+
 ## 特性
 
 - 免解鎖 bootloader：不刷 BL、不升 rev bit，bootloader 保持鎖定
