@@ -165,6 +165,17 @@ class RootViewModel(app: Application) : AndroidViewModel(app) {
         // SM-S928B（EZIF）One UI 9.0 / kernel 6.1.162（构建号 34343818）：6.1.145 → 6.1.162
         // 代际跃升，以港版 DZE2 为模板做全量符号迁移（25 项）+ P0 指纹重生成；2026-10-18 定标完成，待真机验证
         S928BEZIF("cve-2026-43499-S928BXXU6EZIF", "One UI 9.0", "SM-S928B 欧版 S24 Ultra", "EZIF", Region.HONGKONG_TAIWAN, "ksud-ezif-32601", tested = false),
+        // SM-S928B（EUR）One UI 8.0 / kernel 6.1.128（构建号 31999054）：与港版 CZA1 同构建号但
+        // **非同一机型**（欧版 S928B vs 港版 S9280），.rodata 差 8 字节（nfnetlink_log 0x0160b70d vs
+        // 港版 0x0160b705），故独立定标、不可与港版 CZA1 载荷互换。
+        // 驱动沿用通用 6.1 系列（ksud-selected，运行时按内核 vermagic 替换），未构建专属驱动。
+        S928BCZA1("cve-2026-43499-S928BXXS4CZA1", "One UI 8.0", "SM-S928B 欧版 S24 Ultra", "CZA1（欧版）", Region.HONGKONG_TAIWAN, "ksud-selected", tested = false),
+        // SM-S928B（EUR）One UI 7.0 / kernel 6.1.99（构建号 30958380）：同上，独立定标。
+        S928BBYD9("cve-2026-43499-S928BXXU4BYD9", "One UI 7.0", "SM-S928B 欧版 S24 Ultra", "BYD9（欧版）", Region.HONGKONG_TAIWAN, "ksud-selected", tested = false),
+        // SM-S928B（EUR）One UI 6.1 / kernel 6.1.75（构建号 29543898）：同上，独立定标。
+        // 6.1.75 为本 App 支持的最早 6.1 代际，若真机失败优先怀疑 CALL_USERMODEHELPER/pipe 相关
+        // 上游行为变化（该内核早于多个 GKI 补丁），而非偏移。
+        S928BAXK5("cve-2026-43499-S928BXXU4AXK5", "One UI 6.1", "SM-S928B 欧版 S24 Ultra", "AXK5（欧版）", Region.HONGKONG_TAIWAN, "ksud-selected", tested = false),
         F7660BZG3("cve-2026-43499-F7660ZCSBBZG3", "One UI 8.5", "SM-F7660 国行 Z Flip7", "BZG3", Region.CHINA, "ksud-android15-6.6", tested = false),
         F9460GZF1("cve-2026-43499-F9460ZCS9GZF1", "One UI 7", "SM-F9460 国行 Z Fold5", "GZF1", Region.CHINA, "ksud-android13-5.15", tested = false),
         F9560DZG3("cve-2026-43499-F9560ZCS4DZG3", "One UI 8.5", "SM-F9560 国行 Z Fold6", "DZG3", Region.CHINA, "ksud-selected", tested = false),
