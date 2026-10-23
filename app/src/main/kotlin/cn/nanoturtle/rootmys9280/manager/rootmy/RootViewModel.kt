@@ -1414,7 +1414,7 @@ class RootViewModel(app: Application) : AndroidViewModel(app) {
             appendLog("◆ 已唤醒屏幕（竞态阶段结束，不再需要熄屏）")
         }
 
-        // 4. 按需禁用 KernelSU 模块：必须在 drivers load 之前完成。
+        // 3.5 按需禁用 KernelSU 模块（可选，必须在 late-load 之前完成）。
         //    冲突模块的 post-fs-data / uninstall 脚本会在驱动加载后立刻执行，
         //    最坏情况直接把设备重启（issue #407），所以这一步只能抢在 late-load 前。
         if (disableKsuModules) {
