@@ -3,6 +3,8 @@ package cn.nanoturtle.rootmys9280.manager.rootmy
 import android.content.Context
 import android.os.Build
 import java.util.concurrent.TimeUnit
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.OkHttpClient
 import okhttp3.Request
@@ -128,6 +130,38 @@ object LogUploader {
     }
 
     /**
+     * 反馈详情与开发者回复的查询结果。
+     *
+     * 早先这里只返回 `String?`：**无回复 / 查询失败 / 记录已删除**全都被折成 null，
+     * 界面上只能显示「暂无回复」。用户会误以为开发者一直没回，实际可能只是网络失败。
+     * 现在用 [Status] 把四种情况分开，并把服务端一并返回的 kind/note/时间带上，
+     * 让「我的反馈」列表能显示是哪一条、什么时候提交的、有没有回复。
+     */
+    data class FeedbackReply(
+        val status: Status,
+        val reply: String = "",
+        val kind: String = "",
+        val note: String = "",
+        val receivedAt: String = "",
+        val repliedAt: String = "",
+        val error: String = "",
+    ) {
+        enum class Status {
+            /** 开发者已回复。 */
+            REPLIED,
+
+            /** 已收到反馈，尚未回复。 */
+            PENDING,
+
+            /** 服务端没有这条记录（例如被清理），凭据已失效。 */
+            NOT_FOUND,
+
+            /** 查询本身失败（网络/服务端异常），可重试。 */
+            ERROR,
+        }
+    }
+
+    /**
      * 提交问题反馈，返回 [FeedbackResult]。
      *
      * 服务端成功时返回 `{ok, id, token}` —— token 是用户日后查询这条反馈
@@ -151,17 +185,77 @@ object LogUploader {
         return postBody(url, payload.toString())
     }
 
-    /** 凭据查询反馈回复：返回可展示的回复文本，null 表示未找到。 */
-    suspend fun fetchFeedbackReply(context: Context, token: String): String? {
-        val url = endpoint(context)
-        if (url.isBlank()) return null
-        val payload = basePayload(context)
-            .put("action", "feedback_get")
-            .put("fb_token", token)
-        val body = postBodyRaw(url, payload.toString()) ?: return null
-        return runCatching { JSONObject(body).optString("reply").takeIf { it.isNotBlank() } }
+    /**
+     * 凭本地凭据拉取反馈详情与开发者回复。
+     *
+     * 服务端 `feedback_get` 返回 `{ok,id,kind,note,received_at,reply,replied_at}`，
+     * 凭据无效时返回 404 `not_found`。
+     *
+     * ⚠ **必须 `withContext(Dispatchers.IO)`**：底层 OkHttp `execute()` 是阻塞调用。
+     * 此前这里没有切换线程，而界面是从 `rememberCoroutineScope()`（Main 调度器）调用的，
+     * Android 会抛 `NetworkOnMainThreadException`，又被 `runCatching` 静默吞掉，
+     * 结果就是**任何反馈都永远显示「暂无回复」**——这正是「回复接收没做好」的根因。
+     */
+    suspend fun fetchFeedbackReply(context: Context, token: String): FeedbackReply =
+        withContext(Dispatchers.IO) {
+            val url = endpoint(context)
+            if (url.isBlank()) {
+                return@withContext FeedbackReply(FeedbackReply.Status.ERROR, error = "not-configured")
+            }
+            val payload = basePayload(context)
+                .put("action", "feedback_get")
+                .put("fb_token", token)
+            val resp =
+                postBodyRawDetailed(url, payload.toString())
+                    ?: return@withContext FeedbackReply(FeedbackReply.Status.ERROR, error = "network")
+            val (code, body) = resp
+            runCatching {
+                    val o = JSONObject(body)
+                    if (!o.optBoolean("ok", false)) {
+                        val err = o.optString("error")
+                        return@runCatching if (code == 404 || err == "not_found") {
+                            FeedbackReply(FeedbackReply.Status.NOT_FOUND)
+                        } else {
+                            FeedbackReply(
+                                FeedbackReply.Status.ERROR,
+                                error = "HTTP $code" + if (err.isNotBlank()) " ($err)" else "",
+                            )
+                        }
+                    }
+                    val reply = o.optString("reply")
+                    FeedbackReply(
+                        status =
+                            if (reply.isNotBlank()) FeedbackReply.Status.REPLIED
+                            else FeedbackReply.Status.PENDING,
+                        reply = reply,
+                        kind = o.optString("kind"),
+                        note = o.optString("note"),
+                        receivedAt = o.optString("received_at"),
+                        repliedAt = o.optString("replied_at"),
+                    )
+                }
+                .getOrElse {
+                    FeedbackReply(
+                        FeedbackReply.Status.ERROR,
+                        error = it.message ?: it.javaClass.simpleName,
+                    )
+                }
+        }
+
+    /** 发 POST，同时拿到 HTTP 状态码与响应体（用于区分 404 与其它失败）；网络异常返回 null。 */
+    private fun postBodyRawDetailed(url: String, payload: String): Pair<Int, String>? =
+        runCatching {
+            val request =
+                Request.Builder()
+                    .url(url)
+                    .post(payload.toRequestBody(JSON))
+                    .header("User-Agent", "RootMyS24-log-uploader")
+                    .build()
+            client.newCall(request).execute().use { response ->
+                response.code to runCatching { response.body?.string().orEmpty() }.getOrDefault("")
+            }
+        }
             .getOrNull()
-    }
 
     /**
      * 连通性自检：只让服务端确认「能连上数据库」，不写入任何日志。

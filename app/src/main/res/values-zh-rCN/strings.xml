@@ -327,8 +327,14 @@
     <string name="feedback_mine_item">反馈 %1$s…</string>
     <string name="feedback_mine_loading">正在查询回复…</string>
     <string name="feedback_mine_no_reply">暂无回复。</string>
-    <string name="feedback_mine_expand">查看回复</string>
+    <string name="feedback_mine_expand">查看更多</string>
     <string name="feedback_mine_collapse">收起</string>
+    <string name="feedback_mine_replied">已回复</string>
+    <string name="feedback_mine_failed">查询失败</string>
+    <string name="feedback_mine_gone">服务端无此记录</string>
+    <string name="feedback_mine_refresh">刷新</string>
+    <string name="feedback_mine_replied_at">开发者回复 · %1$s</string>
+    <string name="feedback_mine_error">查询回复失败：%1$s</string>
     <string name="rootflow_series_hint">S24 全系通用（S9210 / S9260 / S9280）：同一构建号即可，不分机型。国行与外版不可混用，港台与欧美外版之间可互串。</string>
     <string name="update_new_title">发现新版本 %1$s</string>
     <string name="update_new_body">当前 %1$s（build %2$d），最新 %3$s（build %4$d）。</string>

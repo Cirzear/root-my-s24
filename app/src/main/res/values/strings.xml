@@ -366,8 +366,14 @@ Auto-save log</string>
     <string name="feedback_mine_item">Report %1$s…</string>
     <string name="feedback_mine_loading">Checking for reply…</string>
     <string name="feedback_mine_no_reply">No reply yet.</string>
-    <string name="feedback_mine_expand">View reply</string>
+    <string name="feedback_mine_expand">View more</string>
     <string name="feedback_mine_collapse">Collapse</string>
+    <string name="feedback_mine_replied">Replied</string>
+    <string name="feedback_mine_failed">Check failed</string>
+    <string name="feedback_mine_gone">Not found on server</string>
+    <string name="feedback_mine_refresh">Refresh</string>
+    <string name="feedback_mine_replied_at">Developer reply · %1$s</string>
+    <string name="feedback_mine_error">Could not check the reply: %1$s</string>
     <string name="rootflow_series_hint">Works across the whole S24 series (S9210 / S9260 / S9280): any model with the same build. China and overseas builds are not interchangeable, but Hong Kong/Taiwan and Europe/US builds can be used interchangeably.</string>
     <string name="update_new_title">Version %1$s available</string>
     <string name="update_new_body">Installed %1$s (build %2$d), latest %3$s (build %4$d).</string>

@@ -2170,8 +2170,14 @@ class RootViewModel(app: Application) : AndroidViewModel(app) {
         prefs.edit().putString(KEY_FEEDBACK_TOKENS, cur.joinToString(",")).apply()
     }
 
-    /** 凭据查回复；找不到返回 null。 */
-    suspend fun fetchFeedbackReply(token: String): String? =
+    /**
+     * 凭本地凭据查反馈详情与开发者回复。
+     *
+     * 返回带状态的结果（已回复 / 待回复 / 记录不存在 / 查询失败），
+     * 界面据此区分展示，不再把「查询失败」误报成「暂无回复」。
+     * 网络调用在 [LogUploader.fetchFeedbackReply] 内部已切到 IO 线程。
+     */
+    suspend fun fetchFeedbackReply(token: String): LogUploader.FeedbackReply =
         LogUploader.fetchFeedbackReply(app, token)
 
     /**

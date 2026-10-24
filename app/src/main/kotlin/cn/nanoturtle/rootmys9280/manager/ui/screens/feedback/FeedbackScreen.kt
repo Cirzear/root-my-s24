@@ -31,6 +31,7 @@ import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -47,6 +48,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import cn.nanoturtle.rootmys9280.manager.R
 import cn.nanoturtle.rootmys9280.manager.di.ServiceLocator
 import cn.nanoturtle.rootmys9280.manager.rootmy.LogSharing
+import cn.nanoturtle.rootmys9280.manager.rootmy.LogUploader
 import cn.nanoturtle.rootmys9280.manager.rootmy.OnboardingPrefs
 import cn.nanoturtle.rootmys9280.manager.rootmy.RootViewModel
 import cn.nanoturtle.rootmys9280.manager.ui.theme.VectorMono
@@ -269,13 +271,50 @@ fun FeedbackScreen(onNavigateBack: () -> Unit) {
     }
 }
 
-/** 单条反馈回复卡：凭 token 查开发者回复，就地展示。 */
+/**
+ * 单条反馈卡：进入页面即自动拉取一次，展示「问题类型 / 提交时间 / 回复状态」。
+ *
+ * 早先版本要用户逐条点「展开」才发请求，且只显示 token 前 8 位、拿不到类型与时间，
+ * 多条反馈时根本分不清哪张是哪条；再加上主线程发起网络请求被静默吞掉，
+ * 实际效果就是「永远没有回复」。这里一并修掉：
+ *  - 自动查询（[LaunchedEffect]），不必手点；
+ *  - 四态区分（已回复 / 待回复 / 记录不存在 / 查询失败），失败可重试；
+ *  - 展示服务端本就返回、此前被丢弃的 kind / note / received_at / replied_at。
+ */
 @Composable
-private fun FeedbackReplyCard(token: String, vm: cn.nanoturtle.rootmys9280.manager.rootmy.RootViewModel) {
+private fun FeedbackReplyCard(token: String, vm: RootViewModel) {
     val scope = rememberCoroutineScope()
-    var reply by remember { mutableStateOf<String?>(null) }
+    var data by remember { mutableStateOf<LogUploader.FeedbackReply?>(null) }
     var loading by remember { mutableStateOf(false) }
     var opened by remember { mutableStateOf(false) }
+
+    fun load() {
+        scope.launch {
+            loading = true
+            data = vm.fetchFeedbackReply(token)
+            loading = false
+        }
+    }
+
+    LaunchedEffect(token) {
+        if (data == null) load()
+    }
+
+    val detail = data
+    val statusText =
+        when (detail?.status) {
+            LogUploader.FeedbackReply.Status.REPLIED -> stringResource(R.string.feedback_mine_replied)
+            LogUploader.FeedbackReply.Status.PENDING -> stringResource(R.string.feedback_mine_no_reply)
+            LogUploader.FeedbackReply.Status.NOT_FOUND -> stringResource(R.string.feedback_mine_gone)
+            LogUploader.FeedbackReply.Status.ERROR -> stringResource(R.string.feedback_mine_failed)
+            null -> stringResource(R.string.feedback_mine_loading)
+        }
+    val statusColor =
+        when (detail?.status) {
+            LogUploader.FeedbackReply.Status.REPLIED -> MaterialTheme.colorScheme.primary
+            LogUploader.FeedbackReply.Status.ERROR -> MaterialTheme.colorScheme.error
+            else -> MaterialTheme.colorScheme.onSurfaceVariant
+        }
 
     Card(
         modifier = Modifier.fillMaxWidth().padding(vertical = 4.dp),
@@ -293,38 +332,86 @@ private fun FeedbackReplyCard(token: String, vm: cn.nanoturtle.rootmys9280.manag
                     style = MaterialTheme.typography.labelLarge,
                     modifier = Modifier.weight(1f),
                 )
-                TextButton(
-                    onClick = {
-                        if (!opened) {
-                            opened = true
-                            loading = true
-                            scope.launch {
-                                reply = vm.fetchFeedbackReply(token)
-                                loading = false
-                            }
-                        } else {
-                            opened = false
-                            reply = null
-                        }
-                    },
-                ) {
-                    Text(if (opened) stringResource(R.string.feedback_mine_collapse) else stringResource(R.string.feedback_mine_expand))
+                Text(
+                    text = statusText,
+                    style = MaterialTheme.typography.bodySmall,
+                    color = statusColor,
+                )
+                TextButton(onClick = { load() }, enabled = !loading) {
+                    Text(stringResource(R.string.feedback_mine_refresh))
                 }
             }
-            if (loading) {
-                Text(
-                    text = stringResource(R.string.feedback_mine_loading),
-                    style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant,
-                )
-            } else if (opened) {
-                Text(
-                    text = reply ?: stringResource(R.string.feedback_mine_no_reply),
-                    style = MaterialTheme.typography.bodyMedium,
-                )
+            if (detail != null && detail.status != LogUploader.FeedbackReply.Status.NOT_FOUND) {
+                val meta =
+                    listOf(detail.kind.let { feedbackKindLabel(it) }, detail.receivedAt)
+                        .filter { it.isNotBlank() }
+                        .joinToString(" · ")
+                if (meta.isNotBlank()) {
+                    Text(
+                        text = meta,
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    )
+                }
+                if (detail.note.isNotBlank()) {
+                    val long = detail.note.length > 80
+                    Text(
+                        text = if (opened || !long) detail.note else detail.note.take(80) + "…",
+                        style = MaterialTheme.typography.bodyMedium,
+                        modifier = Modifier.padding(top = 4.dp),
+                    )
+                    if (!opened && long) {
+                        TextButton(onClick = { opened = true }) {
+                            Text(stringResource(R.string.feedback_mine_expand))
+                        }
+                    }
+                }
+                when (detail.status) {
+                    LogUploader.FeedbackReply.Status.REPLIED -> {
+                        Text(
+                            text =
+                                if (detail.repliedAt.isNotBlank())
+                                    stringResource(R.string.feedback_mine_replied_at, detail.repliedAt)
+                                else stringResource(R.string.feedback_mine_replied),
+                            style = MaterialTheme.typography.labelMedium,
+                            color = MaterialTheme.colorScheme.primary,
+                            modifier = Modifier.padding(top = 8.dp),
+                        )
+                        Text(
+                            text = detail.reply,
+                            style = MaterialTheme.typography.bodyMedium,
+                        )
+                    }
+
+                    LogUploader.FeedbackReply.Status.ERROR -> {
+                        Text(
+                            text = stringResource(R.string.feedback_mine_error, detail.error),
+                            style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.colorScheme.error,
+                            modifier = Modifier.padding(top = 4.dp),
+                        )
+                    }
+
+                    else -> Unit
+                }
             }
         }
     }
+}
+
+/** 服务端返回的 kind 字符串 → 本地化文案；未知值原样显示（不丢信息）。 */
+@Composable
+private fun feedbackKindLabel(kind: String): String {
+    val id =
+        when (kind.uppercase()) {
+            "NEVER_ROOT" -> R.string.feedback_kind_never_root
+            "STUCK" -> R.string.feedback_kind_stuck
+            "AFTER_ROOT" -> R.string.feedback_kind_after_root
+            "UI" -> R.string.feedback_kind_ui
+            "OTHER" -> R.string.feedback_kind_other
+            else -> 0
+        }
+    return if (id != 0) stringResource(id) else kind
 }
 
 /** 分段小标题。 */
