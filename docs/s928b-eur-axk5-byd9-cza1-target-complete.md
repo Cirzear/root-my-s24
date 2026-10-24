@@ -1,7 +1,7 @@
 # SM-S928B 欧版 S24 Ultra（e3q）AXK5 / BYD9 / CZA1 三代固件批量定标报告
 
 > 定标日期：2026-10-24
-> 状态：**自动定标完成，三份载荷均编译通过，待真机验证**（随本次 3.6.0 beta 携带，`tested=false`）
+> 状态：**自动定标完成，三份载荷均编译通过，待真机验证**（自 v3.5.2-beta.205 起携带，`tested=false`，需在设置里打开「未经测试的载荷」才可见）
 > 目标：`fusion-s24u` → `src/targets/{e3q-S928BXXU4AXK5, e3q-S928BXXU4BYD9, e3q-S928BXXS4CZA1}/`
 > 素材：`/home/nt/下载/s24uboot.img`（RAR5，内含三代 boot）→ 重命名归档为
 >   `devices_ports/eur_oneui6.1_axk5_boot.img`、`eur_oneui7.0_byd9_boot.img`、`eur_oneui8.0_cza1_boot.img`
