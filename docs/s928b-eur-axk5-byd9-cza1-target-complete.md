@@ -110,3 +110,40 @@ ANDROID_NDK_HOME=/home/nt/项目/samsung_root_research/06_工具链/android-ndk-
 - AXK5（6.1.75）是本 App 支持的最早 6.1 代际，早于多个 GKI 补丁；
   真机失败优先怀疑上游行为变化（pipe / `call_usermodehelper`），而非偏移
 - 分析细节见研究仓库 `devices_ports/s928b_{axk5,byd9,cza1_eur}_analysis.md`
+
+## 8. 真机反馈与修复（2026-10-25）
+
+**反馈**：欧版用户实测 **A14（AXK5）与 A15（BYD9）均失败**，A16（CZA1）未测。
+日志显示 KASLR slide 正常（`slide-kaslr-ok source=tracefs base=ffffffc0080c0000 slide=0xc0000`），
+但 physrw 阶段必失败：
+
+```
+[-] KernelSnitch mm_struct leak failed
+[-] prepare_kernel_page did not find usable nonzero source pointers
+[!] pipe KernelSnitch sk_buff page leak failed   ← 之后 29 次全部如此
+```
+
+**根因：`MM_STRUCT_SZ` 取值错误。**
+
+它不是 BTF 的 `sizeof(mm_struct)`（6.1 全系都是 `0x3c0`），而是 KernelSnitch bruteforce 的
+**步长**（`mm_struct_candidate += MM_STRUCT_SZ`）和 slab 对象数的分母
+（`objs_per_slab = ORDER3_SIZE / MM_STRUCT_SZ`）。步长写成 `0x3c0` 会**跨过真实的 mm_struct**，
+泄漏必定失败；`pipe` 那条路径用的是同一步长，所以同样失败。
+
+三条 target 沿用了 CZA1 模板在 `APP_S928_STABLE_RACE` 分支里的 `0x3c0`（模板注释称
+0x3c0 / 0x400 都成功过，是按用户要求"并回"的值，与 App 主线某个历史内置载荷对齐）；
+而**同机型 SM-S928B 已实测通过的 EZIF** 在该分支用的是 **`0x400`**，且所有已验证的
+6.1 target（DZF2 / DZE2 / DZH3 / F741N…）都是 `0x400`。
+
+**修复**：三条 target 的 stable 分支 `MM_STRUCT_SZ 0x3c0 → 0x400`，重编均 104,128 B：
+
+| target | sha256 前缀 |
+|---|---|
+| AXK5 | `af781e89…` |
+| BYD9 | `8fc8b56a…` |
+| CZA1（欧版） | `c1f07506…` |
+
+> **教训**：自动定标器只做符号迁移与 BTF 核对，**判断不了这类"调优常量"**。
+> 从别的模板生成新 target 时，必须单独核对 `APP_S928_STABLE_RACE` 条件块里的
+> `MM_STRUCT_SZ` / `SLIDE_WAITER_CORE` / `P0_KERNEL_PHYS_LOAD` 是否与**同机型已验证**的
+> target 一致（本机看：EZIF 是最贴近的参照）。
