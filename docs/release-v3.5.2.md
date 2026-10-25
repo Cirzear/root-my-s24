@@ -9,9 +9,10 @@ v3.5.1 之后的累积更新以 **v3.5.2** 发布。核心是把 **SM-S928B（�
 > **发布渠道说明**：本版先以两个预发布增量上线，随后合并为第三个预发布——
 > - `v3.5.2-beta.205`：含欧版三代新载荷，EZIF 尚未转正
 > - `v3.5.2-alpha.206`：EZIF 转正，但不含三代新载荷
-> - `v3.5.2-beta.208`：**两者并集（推荐使用）**，等同 main 分支当前内容
+> - `v3.5.2-beta.208`：**两者并集**
+> - `v3.5.2-beta.211`：**当前推荐**，在 208 基础上修复欧版三条载荷的真机失败（`MM_STRUCT_SZ`）
 >
-> 两个早期预发布保留作对照；后续稳定版会一次性包含全部内容。
+> 早期预发布保留作对照；后续稳定版会一次性包含全部内容。
 
 ---
 
@@ -53,6 +54,27 @@ v3.5.1 之后的累积更新以 **v3.5.2** 发布。核心是把 **SM-S928B（�
   `tested = true`；若失败请附 `getprop ro.build.fingerprint` 与运行日志反馈。
 - **美版 S24+（SM-S926U1 / XAA）DZE2 载荷**仍不包含（与 v3.5.1 相同，等真机验证后再放）。
 
+## 五、真机反馈修复（`v3.5.2-beta.211`）
+
+欧版用户实测 **A14（AXK5）与 A15（BYD9）失败**，A16（CZA1）未测。日志显示 KASLR slide 正常
+（`slide-kaslr-ok source=tracefs slide=0xc0000`），但 physrw 阶段 100% 失败：
+
+```
+[-] KernelSnitch mm_struct leak failed
+[-] prepare_kernel_page did not find usable nonzero source pointers
+[!] pipe KernelSnitch sk_buff page leak failed
+```
+
+**根因**：`MM_STRUCT_SZ` 不是 BTF 的 `sizeof(mm_struct)`（6.1 全系 `0x3c0`），而是 KernelSnitch
+bruteforce 的**步长**（`mm_struct_candidate += MM_STRUCT_SZ`）与 slab 对象数分母
+（`objs_per_slab = ORDER3_SIZE / MM_STRUCT_SZ`）。步长写成 `0x3c0` 会跨过真实的 mm_struct，
+泄漏必定失败。三条载荷沿用了未验证模板（CZA1）里的值，而**同机型已实测的 EZIF** 及其余所有
+已验证 6.1 载荷都用 `0x400`。
+
+**修复**：三条载荷 `MM_STRUCT_SZ → 0x400` 重编（均 104,128 B），本版起生效。
+三条仍为 `tested = false`，待真机确认后再转正。
+详见 [`s928b-eur-axk5-byd9-cza1-target-complete.md`](s928b-eur-axk5-byd9-cza1-target-complete.md) §8。
+
 ## 系统要求
 
 - 机型：见根 README「支持设备」（S24 系列、S23/S25 部分机型、Z Flip/Fold 系列与 W23）
@@ -72,6 +94,7 @@ v3.5.1 之后的累积更新以 **v3.5.2** 发布。核心是把 **SM-S928B（�
 
 | 版本 | APK | 大小 | SHA-256 |
 |---|---|---|---|
+| `v3.5.2-beta.211` | `RootMyS24-v3.5.2-beta.211.apk` | 51,155,942 B | `235723d7c9a2247b74a3212981181821141b68f7da4629a4a3117b76fe9455c8` |
 | `v3.5.2-beta.208` | `RootMyS24-v3.5.2-beta.208.apk` | 51,153,078 B | `3d5214c95a0e201a37ab95326253065cb4c9e4290d611421ce70879a3e477c73` |
 | `v3.5.2-beta.205` | `RootMyS24-v3.5.2-beta.205.apk` | 51,222,070 B | `77d227dbbd7a7b6c9fd205ab42b50084ddb16140dbf2ad7884d664c1b0e6aa54` |
 | `v3.5.2-alpha.206` | `RootMyS24-v3.5.2-alpha.206.apk` | 51,116,963 B | `1ab98cad3470dbb3ce332ce6f27e66e768132c816a7fec0d5c5f0493f402123b` |
